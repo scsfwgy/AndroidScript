@@ -1,0 +1,40 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'application'
+}
+
+group = 'me.user'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
+
+    //
+    api 'org.dom4j:dom4j:2.1.3'
+
+    //https://github.com/alibaba/easyexcel
+    //api 'com.alibaba:easyexcel:2.2.10'
+
+    //https://mvnrepository.com/artifact/org.apache.poi/poi/5.0.0
+    api 'org.apache.poi:poi:5.0.0'
+}
+
+test {
+    useJUnit()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
+
+application {
+    mainClassName = 'MainKt'
+}
