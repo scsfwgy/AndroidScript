@@ -66,6 +66,19 @@ object FileUtilsWrapper {
         }
     }
 
+    fun listFileListByPath(path: String) {
+
+    }
+
+    fun splitFileByDot(file: File): Pair<String, String?> {
+        val name = file.name
+        val index = name.lastIndexOf(".")
+        if (index == -1 || index == name.length - 1) return Pair(name, null)
+        val first = name.substring(0, index)
+        val second = name.substring(index + 1)
+        return Pair(first, second)
+    }
+
     fun readLine(file: File): List<String> {
         if (FileUtils.isDir(file)) throw IllegalArgumentException("读取的文件必须是文件，不能是文件夹")
         return file.readLines()

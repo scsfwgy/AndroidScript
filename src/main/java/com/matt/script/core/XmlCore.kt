@@ -3,6 +3,7 @@ package com.matt.script.core
 import com.matt.script.config.FileConfig
 import com.matt.script.config.GlobalConfig
 import com.matt.script.utils.FileUtilsWrapper
+import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.RegexUtils
 import com.matt.script.utils.blankj.TimeUtils
 import java.io.File
@@ -20,40 +21,19 @@ object XmlCore {
         if (!file.exists()) {
             throw IllegalAccessException("stringsXml2Map文件不存在:" + stringsXmlPath)
         }
-        val readXmlRegex = """
-            <string\s*name="(.*)"\s*>((?!</string>)[\s\S\n])*</string>
-            """.trimIndent()
-        val replaceXmlRegex = """
-            (?<=<string\s{0,10000000}name="(.{0,10000000})"\s{0,10000000}>)((?!</string>)[\s\S\n])*(?=</string>)
-        """.trimIndent()
-        val keyRegex = """
-            (?<=<string\s{0,10000000}name=")((?!")(.))*(?="\s*>)
-        """.trimIndent()
         val map = HashMap<String, String>()
         val sortKeyList = ArrayList<String>()
         val readText = file.readText()
-        val matches = RegexUtils.getMatches(readXmlRegex, readText)
+        val matches = RegexUtilsWrapper.lines2StringXmlLineList(readText)
         matches.forEachIndexed { index, s ->
             //if (index > 10) return@forEachIndexed
-            val keys = RegexUtils.getMatches(
-                keyRegex, s
-            )
-            if (keys.size != 1) {
-                throw IllegalArgumentException("参数错误")
-            }
-            val values = RegexUtils.getMatches(
-                replaceXmlRegex, s
-            )
-            if (values.size != 1) {
-                throw IllegalArgumentException("参数错误")
-            }
-            val key = keys[0]
-            val value = values[0]
+            val k = RegexUtilsWrapper.line2StringXmlLineKey(s)
+            val v = RegexUtilsWrapper.line2StringXmlLineValue(s)
             if (GlobalConfig.debug) {
                 //LoggerImp.logger.d("stringsXml2Map", key + "==>" + value)
             }
-            sortKeyList.add(key)
-            map[key] = value
+            sortKeyList.add(k)
+            map[k] = v
         }
         return Pair(map, sortKeyList)
     }

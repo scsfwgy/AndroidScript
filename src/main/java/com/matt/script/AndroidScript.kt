@@ -17,7 +17,7 @@ object AndroidScript {
             currRootPath + "/" + FileConfig.backup
         )
         val time =
-            TimeUtils.millis2String(System.currentTimeMillis(), TimeUtils.getSafeDateFormat("yyyy-MM-dd_HH:mm:ss"))
+            TimeUtils.millis2String(System.currentTimeMillis(), TimeUtils.getSafeDateFormat("yyyy-MM-dd_HH-mm-ss"))
         val excelPath = backUpDir + "/" + "安卓抽取${time}.xls"
         ExcelCore.xml2Excel(FileUtilsWrapper.getFileByCreate(excelPath))
     }
