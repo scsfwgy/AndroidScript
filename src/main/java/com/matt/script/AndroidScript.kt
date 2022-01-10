@@ -27,7 +27,7 @@ object AndroidScript {
      * 把excel回写到备份文件夹中的strings.xml
      */
     fun excel2StringsXml() {
-        val excel2StringXml = "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/安卓抽取2021-12-24_16:31:09.xls"
+        val excel2StringXml = "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/安卓抽取2022-01-05_15-56-44-2.xls"
         XmlCore.excel2StringsXml(excel2StringXml)
     }
 }

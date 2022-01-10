@@ -1,6 +1,11 @@
 package com.matt.script.utils
 
 import com.matt.script.utils.blankj.RegexUtils
+import java.io.File
+
+fun main() {
+    RegexUtilsWrapper.test()
+}
 
 object RegexUtilsWrapper {
 
@@ -44,5 +49,27 @@ object RegexUtilsWrapper {
             throw IllegalArgumentException("line2StringXmlLineKey参数错误:$line")
         }
         return values[0]
+    }
+
+    fun findRStringKey() {
+        val str =
+            """return if (mCancelType) MyContextUtils.getString(R.string.account_status_finish_layout4) else MyContextUtils.getString(R.string.account_appeal_layout1)"""
+        val matches = RegexUtils.getMatches("(?<=R.string.)(a-zA-Z0-9_.)+", str)
+        println(matches)
+    }
+
+    fun test() {
+        // <string\s*name="(.*)"\s*>((?!</string>)[\s\S\n])*</string>
+        // @"((?!")[\s\S\n])*"
+        val readLine =
+            FileUtilsWrapper.readLine(File("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/WithdrawalApplySuccessViewCell.m"))
+        //val regex = """@"((?!")[\s\S\n])*""""
+        val regex = """@"((?!")[(\s\S\n)*(\u4e00-\u9fa5)+(\s\S\n)*]*)""""
+        readLine.forEach {
+            val matches = RegexUtils.getMatches(regex, it)
+            if (matches.isNotEmpty()) {
+                println(matches)
+            }
+        }
     }
 }

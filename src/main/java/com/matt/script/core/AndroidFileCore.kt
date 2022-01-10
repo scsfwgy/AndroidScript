@@ -5,14 +5,13 @@ import com.matt.script.utils.blankj.FileUtils
 import java.io.File
 
 fun main() {
-//    val scanFiles = AndroidFileCore.scanFiles("/Users/matt.wang/IdeaProjects/AndroidScript")
-//    scanFiles.forEach {
-//        val splitFileByDot = FileUtilsWrapper.splitFileByDot(it)
-//        val path = FileUtils.getDirName(it)
-//        println(path + "," + it.name + "," + splitFileByDot.first + "," + splitFileByDot.second)
-//    }
+    val scanFiles =
+        AndroidFileCore.scanFiles("/Users/matt.wang/AsProject/Android-LBK/app/src/main/java/com/superchain/lbanknew/ui/activity")
+    scanFiles.forEach {
+        AndroidFileCore.parsingJavaOrKtFile(it)
+    }
 
-    AndroidFileCore.parsingJavaOrKtFile(File("/Users/matt.wang/IdeaProjects/AndroidScript/src/main/java/com/matt/script/AndroidScript.kt"))
+    //AndroidFileCore.parsingJavaOrKtFile(File("/Users/matt.wang/IdeaProjects/AndroidScript/src/main/java/com/matt/script/AndroidScript.kt"))
 }
 
 object AndroidFileCore {
@@ -25,7 +24,9 @@ object AndroidFileCore {
     fun parsingJavaOrKtFile(file: File) {
         val readLine = FileUtilsWrapper.readLine(file)
         readLine.forEach {
-            println(it)
+            if (it.contains("R.string.")) {
+                println(it)
+            }
         }
     }
 }
