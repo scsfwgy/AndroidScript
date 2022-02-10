@@ -21,16 +21,23 @@ object KeyConvertCore {
             newMap[it.key] = it.value[1]
         }
         //println(newMap)
-        runKeyConvertCore("/Users/matt.wang/AsProject/Android-LBK/app/src/main/java/com/superchain/lbanknew/ui",
-            RegexUtilsWrapper.javaOrKtPureKeyRegex,
+        runKeyConvertCore("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles",
+            RegexUtilsWrapper.iosPureKeyRegex,
             newMap,
             noNewKeyValue = "noNewKeyValueYouCanGlobalSearchMe",
+            linePretreatment = object : LinePretreatment {
+                override fun line2NewLine(line: String): String {
+                    //对单行做一些特殊处理以满足解析要求
+                    return RegexUtils.getReplaceAll(line, """(?!%s)%""", "~~~~~~")
+                }
+            },
             fileFilter = object : FileFilter {
                 override fun filter(file: File): Boolean {
                     val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                     val second = splitFileByDot.second
                     //只替换这些文件
-                    return second != null && (second == "java" || second == "kt")
+                    //return second != null && (second == "java" || second == "kt")
+                    return second != null && (second == "m")
                 }
 
             })
@@ -41,10 +48,12 @@ object KeyConvertCore {
         pureKeyRegular: String,
         oldKey2NewKeyMap: Map<String, String>,
         noNewKeyValue: String?,
+        linePretreatment: LinePretreatment,
         fileFilter: FileFilter? = null,
         filterSuffix: String? = null,
         filterPrefix: String? = null,
-    ) {
+
+        ) {
         val listFileByPath = FileUtilsWrapper.listFileByPath(scanPathDir, filterSuffix, filterPrefix)
         listFileByPath.forEach {
             if (fileFilter != null && !fileFilter.filter(it)) {
@@ -53,7 +62,7 @@ object KeyConvertCore {
                 }
                 return@forEach
             }
-            convert(it, pureKeyRegular, oldKey2NewKeyMap, noNewKeyValue)
+            convert(it, pureKeyRegular, oldKey2NewKeyMap, noNewKeyValue, linePretreatment)
         }
     }
 
@@ -62,6 +71,7 @@ object KeyConvertCore {
         pureKeyRegular: String,
         oldKey2NewKeyMap: Map<String, String>,
         noNewKeyValue: String?,
+        linePretreatment: LinePretreatment,
     ) {
         if (!file.exists()) {
             throw IllegalAccessException("要操作的文件不存在：$file")
@@ -75,14 +85,16 @@ object KeyConvertCore {
         //清空
         tempFile.writeText("")
         val readLines = file.readLines()
-        readLines.forEachIndexed { index, line ->
+        readLines.forEachIndexed { index, line1 ->
+            val line = linePretreatment.line2NewLine(line1)
             val keyList = RegexUtils.getMatches(pureKeyRegular, line)
             if (keyList.isNotEmpty()) {
                 val newFormatLine = RegexUtils.getReplaceAll(line, pureKeyRegular, "%s")
                 var newLine = "该行解析错误,请排查具体原因=====>>>" + line
                 try {
                     newLine = String.format(
-                        newFormatLine, *keyList.map { oldKey2NewKeyMap[it] ?: (noNewKeyValue ?: it) }.toTypedArray()
+                        newFormatLine,
+                        *keyList.map { oldKey2NewKeyMap[it] ?: (noNewKeyValue ?: it) }.toTypedArray()
                     )
                 } catch (e: Exception) {
                     println("出现异常（后续操作继续）：${file.path},line:$index" + e.localizedMessage)
