@@ -79,13 +79,13 @@ object KeyConvertCore {
             val keyList = RegexUtils.getMatches(pureKeyRegular, line)
             if (keyList.isNotEmpty()) {
                 val newFormatLine = RegexUtils.getReplaceAll(line, pureKeyRegular, "%s")
-                var newLine = "该行解析错误...，请排查具体原因"
+                var newLine = "该行解析错误,请排查具体原因=====>>>" + line
                 try {
                     newLine = String.format(
                         newFormatLine, *keyList.map { oldKey2NewKeyMap[it] ?: (noNewKeyValue ?: it) }.toTypedArray()
                     )
                 } catch (e: Exception) {
-                    println("出现异常（后续操作继续）：=====》》》》" + line)
+                    println("出现异常（后续操作继续）：${file.path},line:$index" + e.localizedMessage)
                     e.printStackTrace()
                 }
                 if (debug) {
