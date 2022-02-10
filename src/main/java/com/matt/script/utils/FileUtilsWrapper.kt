@@ -66,10 +66,6 @@ object FileUtilsWrapper {
         }
     }
 
-    fun listFileListByPath(path: String) {
-
-    }
-
     fun splitFileByDot(file: File): Pair<String, String?> {
         val name = file.name
         val index = name.lastIndexOf(".")

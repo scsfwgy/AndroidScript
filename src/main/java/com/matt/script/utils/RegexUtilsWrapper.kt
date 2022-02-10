@@ -22,6 +22,18 @@ object RegexUtilsWrapper {
             (?<=<string\s{0,10000000}name="(.{0,10000000})"\s{0,10000000}>)((?!</string>)[\s\S\n])*(?=</string>)
         """.trimIndent()
 
+    val pureKeyRegex = """
+        [a-zA-Z0-9_.]+
+    """.trimIndent()
+
+    val javaOrKtPureKeyRegex = """
+        (?<=R.string\.)$pureKeyRegex
+    """.trimIndent()
+
+    val iosPureKeyRegex = """
+        (?<=RDLocalizedString\(@")[a-zA-Z0-9\u4e00-\u9fa5_.\\、。"]+(?="\))
+    """.trimIndent()
+
     /**
      * 输入多行数据，匹配strings.xml中单行文案:<string name="Home">首页</string>
      */
