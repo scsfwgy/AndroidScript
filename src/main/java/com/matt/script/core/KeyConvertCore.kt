@@ -12,6 +12,8 @@ fun main() {
 
 object KeyConvertCore {
     val debug = true
+    val unFindKeySet = mutableSetOf<String>()
+    val processErrorFileList = mutableSetOf<String>()
 
     fun test() {
         val excel2Map =
@@ -41,6 +43,13 @@ object KeyConvertCore {
                 }
 
             })
+
+        println("====================解析结束===========================")
+        println("=======打印未找到新key的旧key集合========")
+        println(unFindKeySet)
+        println("=======打印出错的文件集合，注意排查处理========")
+        println(processErrorFileList)
+
     }
 
     fun runKeyConvertCore(
@@ -79,7 +88,7 @@ object KeyConvertCore {
         if (oldKey2NewKeyMap.isEmpty()) {
             throw IllegalAccessException("新旧key字典为空：$oldKey2NewKeyMap")
         }
-
+        var errorType = false
         val backUpSuffix = ".backUp"
         val tempFile = File(file.parentFile.path, file.name + backUpSuffix)
         //清空
@@ -94,9 +103,16 @@ object KeyConvertCore {
                 try {
                     newLine = String.format(
                         newFormatLine,
-                        *keyList.map { oldKey2NewKeyMap[it] ?: (noNewKeyValue ?: it) }.toTypedArray()
+                        *keyList.map {
+                            val newKey = oldKey2NewKeyMap[it]
+                            if (newKey == null) {
+                                unFindKeySet.add(it)
+                            }
+                            newKey ?: (noNewKeyValue ?: it)
+                        }.toTypedArray()
                     )
                 } catch (e: Exception) {
+                    errorType = true
                     println("出现异常（后续操作继续）：${file.path},line:$index" + e.localizedMessage)
                     e.printStackTrace()
                 }
@@ -112,6 +128,9 @@ object KeyConvertCore {
             //写入默认,最后一行就不要写入换行符
             if (index != readLines.size - 1) {
                 tempFile.appendText("\n")
+            }
+            if (errorType) {
+                processErrorFileList.add(file.path)
             }
         }
 
