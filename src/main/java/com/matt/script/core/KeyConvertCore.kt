@@ -29,7 +29,7 @@ object KeyConvertCore {
             noNewKeyValue = "noNewKeyValueYouCanGlobalSearchMe",
             linePretreatment = object : LinePretreatment {
                 override fun line2NewLine(line: String): String {
-                    //对单行做一些特殊处理以满足解析要求
+                    //对单行做一些特殊预处理以满足解析要求
                     return RegexUtils.getReplaceAll(line, """(?!%s)%""", "~~~~~~")
                 }
             },
