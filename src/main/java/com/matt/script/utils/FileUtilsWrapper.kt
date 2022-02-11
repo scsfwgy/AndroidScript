@@ -1,10 +1,14 @@
 package com.matt.script.utils
 
+import com.matt.script.core.FileFilter
+import com.matt.script.core.KeyConvertCore
+import com.matt.script.core.LinePretreatment
 import com.matt.script.log.LoggerImp
 import com.matt.script.utils.blankj.FileUtils
 import java.io.File
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
+import java.util.function.Consumer
 
 /**
  * ============================================================
@@ -15,6 +19,58 @@ import java.lang.StringBuilder
  **/
 object FileUtilsWrapper {
     val TAG = FileUtilsWrapper::class.java.simpleName
+
+    /**
+     * @param dirPath 扫描的文件夹
+     * @param linePretreatment 要处理的行，不需要处理直接返回入参即可
+     * @param fileFilter 处理哪些文件
+     */
+    fun scanDirList(
+        dirPath: String,
+        linePretreatment: LinePretreatment,
+        fileFilter: FileFilter,
+        scanFinishConsumer: Consumer<Boolean>
+    ) {
+        val listFileByPath = listFileByPath(dirPath)
+        listFileByPath.forEach { file ->
+            if (!fileFilter.filter(file)) {
+                if (KeyConvertCore.debug) {
+                    println("该文件已被fileFilter过滤，不进行解析")
+                }
+                return@forEach
+            }
+            replaceFileByLine(file, linePretreatment)
+        }
+        scanFinishConsumer.accept(true)
+    }
+
+    /**
+     * 一行一行扫描文件，调用者完成替换规则，然后覆写文件
+     */
+    fun replaceFileByLine(file: File, linePretreatment: LinePretreatment) {
+        if (!file.exists()) {
+            throw IllegalAccessException("要操作的文件不存在：$file")
+        }
+        val backUpSuffix = ".backUp"
+        val tempFile = File(file.parentFile.path, file.name + backUpSuffix)
+        //清空
+        tempFile.writeText("")
+        val readLines = file.readLines()
+        readLines.forEachIndexed { index, line1 ->
+            val newLine = linePretreatment.line2NewLine(file, line1, index, readLines.size)
+            //println(newLine)
+            tempFile.appendText(newLine)
+            //写入默认,最后一行就不要写入换行符
+            if (index != readLines.size - 1) {
+                tempFile.appendText("\n")
+            }
+        }
+
+        //覆盖老文件
+        val name = file.name
+        FileUtils.delete(file)
+        FileUtils.rename(tempFile, name)
+    }
 
     /**
      * 列出文件夹内的文件，支持前后缀过滤

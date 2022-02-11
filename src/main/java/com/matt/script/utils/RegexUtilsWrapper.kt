@@ -30,8 +30,17 @@ object RegexUtilsWrapper {
         (?<=R.string\.)$pureKeyRegex
     """.trimIndent()
 
+    val xmlPureKeyRegex = """
+        (?<=@string/)$pureKeyRegex
+    """.trimIndent()
+
     val iosPureKeyRegex = """
         (?<=RDLocalizedString\(@")[a-zA-Z0-9\u4e00-\u9fa5_.\\、。"]+(?="\))
+    """.trimIndent()
+
+    //包含%，不包含%s
+    val iosSpecialRegex = """
+        (?!%s)%
     """.trimIndent()
 
     /**
