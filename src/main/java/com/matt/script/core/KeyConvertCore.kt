@@ -22,38 +22,24 @@ object KeyConvertCore {
         excel2Map.forEach {
             oldKey2NewKeyMap[it.key] = it.value[1]
         }
-        //找不到新key的显示
-        val noNewKeyValue = "noNewKeyValue"
         FileUtilsWrapper.scanDirList("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp",
             linePretreatment = object : LinePretreatment {
                 override fun line2NewLine(file: File, line: String, lineIndex: Int, lineSize: Int): String {
                     val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
                     //val pLine = line
+                    var finalLine = "该行解析错误,请排查具体原因=====>>>" + pLine
                     var errorType = false
-                    val xmlPureKeyRegex = RegexUtilsWrapper.iosPureKeyRegex
-                    val keyList = RegexUtils.getMatches(xmlPureKeyRegex, pLine)
-                    val finalLine = if (keyList.isNotEmpty()) {
-                        val newFormatLine = RegexUtils.getReplaceAll(pLine, xmlPureKeyRegex, "%s")
-                        var newLine = "该行解析错误,请排查具体原因=====>>>" + pLine
-                        try {
-                            newLine = String.format(
-                                newFormatLine,
-                                *keyList.map {
-                                    val newKey = oldKey2NewKeyMap[it]
-                                    if (newKey == null) {
-                                        unFindKeySet.add(it)
-                                    }
-                                    newKey ?: noNewKeyValue
-                                }.toTypedArray()
-                            )
-                        } catch (e: Exception) {
-                            errorType = true
-                            println("出现异常（后续操作继续）：${file.path},line:$lineIndex" + e.localizedMessage)
-                            e.printStackTrace()
+                    try {
+                        val newPair = RegexUtilsWrapper.line2NewLine(pLine, RegexUtilsWrapper.iosPureKeyRegex, oldKey2NewKeyMap)
+                        val noKeyList = newPair.second
+                        if (!noKeyList.isNullOrEmpty()) {
+                            unFindKeySet.addAll(noKeyList)
                         }
-                        newLine
-                    } else {
-                        pLine
+                        finalLine = newPair.first
+                    } catch (e: Exception) {
+                        errorType = true
+                        println("出现异常（后续操作继续）：${file.path},line:$lineIndex" + e.localizedMessage)
+                        e.printStackTrace()
                     }
                     //最后一行
                     if (lineIndex == lineSize - 1) {
