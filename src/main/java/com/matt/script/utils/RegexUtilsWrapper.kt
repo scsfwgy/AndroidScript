@@ -1,9 +1,8 @@
 package com.matt.script.utils
 
-import com.matt.script.core.KeyConvertCore
+import com.matt.script.core.FormatLineConvert
 import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
-import kotlin.jvm.Throws
 
 fun main() {
     RegexUtilsWrapper.test()
@@ -82,30 +81,18 @@ object RegexUtilsWrapper {
     }
 
 
-    fun line2NewLine(
+    fun line2FormatLine(
         line: String,
         valueRegex: String,
-        oldKey2NewKeyMap: Map<String, String>,
         replace: String = "%s",
-        noNewKeyValue: String = "noNewKeyValue"
-    ): Pair<String, Set<String>?> {
+        formatLineConvert: FormatLineConvert,
+    ): String {
         val keyList = RegexUtils.getMatches(valueRegex, line)
         return if (keyList.isNotEmpty()) {
-            val list = mutableSetOf<String>()
             val newFormatLine = RegexUtils.getReplaceAll(line, valueRegex, replace)
-            val l = String.format(
-                newFormatLine,
-                *keyList.map {
-                    val newKey = oldKey2NewKeyMap[it]
-                    if (newKey == null) {
-                        list.add(it)
-                    }
-                    newKey ?: noNewKeyValue
-                }.toTypedArray()
-            )
-            Pair(l, list)
+            formatLineConvert.formatLine2NewLine(newFormatLine, keyList)
         } else {
-            Pair(line, null)
+            formatLineConvert.formatLine2NewLine(line, null)
         }
     }
 

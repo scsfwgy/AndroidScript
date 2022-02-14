@@ -22,25 +22,43 @@ object KeyConvertCore {
         excel2Map.forEach {
             oldKey2NewKeyMap[it.key] = it.value[1]
         }
+        val noNewKeyValue = "noNewKeyValue"
         FileUtilsWrapper.scanDirList("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp",
             linePretreatment = object : LinePretreatment {
                 override fun line2NewLine(file: File, line: String, lineIndex: Int, lineSize: Int): String {
                     val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
                     //val pLine = line
-                    var finalLine = "该行解析错误,请排查具体原因=====>>>" + pLine
                     var errorType = false
-                    try {
-                        val newPair = RegexUtilsWrapper.line2NewLine(pLine, RegexUtilsWrapper.iosPureKeyRegex, oldKey2NewKeyMap)
-                        val noKeyList = newPair.second
-                        if (!noKeyList.isNullOrEmpty()) {
-                            unFindKeySet.addAll(noKeyList)
-                        }
-                        finalLine = newPair.first
-                    } catch (e: Exception) {
-                        errorType = true
-                        println("出现异常（后续操作继续）：${file.path},line:$lineIndex" + e.localizedMessage)
-                        e.printStackTrace()
-                    }
+                    val finalLine = RegexUtilsWrapper.line2FormatLine(
+                        pLine,
+                        RegexUtilsWrapper.iosPureKeyRegex,
+                        formatLineConvert = object : FormatLineConvert {
+                            override fun formatLine2NewLine(
+                                formatLine: String,
+                                placeholderList: List<String>?
+                            ): String {
+                                if (placeholderList == null) {
+                                    return formatLine
+                                } else {
+                                    var finalLine = "该行解析错误,请排查具体原因=====>>>" + pLine
+                                    try {
+                                        finalLine = formatLine.format(*placeholderList.map {
+                                            val newKey = oldKey2NewKeyMap[it]
+                                            if (newKey == null) {
+                                                unFindKeySet.add(it)
+                                            }
+                                            newKey ?: noNewKeyValue
+                                        }.toTypedArray())
+                                    } catch (e: Exception) {
+                                        errorType = true
+                                        println("出现异常（后续操作继续）：${file.path},line:$lineIndex" + e.localizedMessage)
+                                        e.printStackTrace()
+                                    }
+                                    return finalLine
+                                }
+                            }
+
+                        })
                     //最后一行
                     if (lineIndex == lineSize - 1) {
                         if (errorType) {
