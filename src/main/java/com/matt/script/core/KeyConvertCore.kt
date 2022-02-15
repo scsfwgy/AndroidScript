@@ -2,7 +2,6 @@ package com.matt.script.core
 
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
-import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
 import java.util.function.Consumer
 
@@ -15,23 +14,46 @@ object KeyConvertCore {
     val unFindKeySet = mutableSetOf<String>()
     val processErrorFileList = mutableSetOf<String>()
 
+
+    /**
+     * 各个文件对应的解析规则
+     */
+    fun fileLineRegex(file: File): String? {
+        val fileName = file.name
+        val pair = FileUtilsWrapper.splitFileByDot(file)
+        val second = pair.second
+        return if (second == "java" || second == "kt") {
+            RegexUtilsWrapper.javaOrKtPureKeyRegex
+        } else if (fileName == "strings.xml") {
+            RegexUtilsWrapper.stringXmlPureKeyRegex
+        } else if (second == "xml") {
+            RegexUtilsWrapper.xmlPureKeyRegex
+        } else if (second == "m") {
+            RegexUtilsWrapper.iosPureKeyRegex
+        } else {
+            null
+        }
+    }
+
     fun scanCore() {
         val excel2Map =
-            ExcelCore.excel2Map(File("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/keyTOkey.xls"), 0, 1)
+            ExcelCore.excel2Map(File("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/keyTOkey_auto.xls"), 0, 1)
         val oldKey2NewKeyMap = HashMap<String, String>()
         excel2Map.forEach {
             oldKey2NewKeyMap[it.key] = it.value[1]
         }
         val noNewKeyValue = "noNewKeyValue"
-        FileUtilsWrapper.scanDirList("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp",
+        FileUtilsWrapper.scanDirList("/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper",
             linePretreatment = object : LinePretreatment {
                 override fun line2NewLine(file: File, line: String, lineIndex: Int, lineSize: Int): String {
-                    val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
-                    //val pLine = line
+                    val placeholder = "~~~~~~~~~"
+                    val special = "%"
+                    //val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
+                    val pLine = line.replace(special, placeholder)
                     var errorType = false
                     val finalLine = RegexUtilsWrapper.line2FormatLine(
                         pLine,
-                        RegexUtilsWrapper.iosPureKeyRegex,
+                        fileLineRegex(file),
                         formatLineConvert = object : FormatLineConvert {
                             override fun formatLine2NewLine(
                                 formatLine: String,
@@ -51,7 +73,7 @@ object KeyConvertCore {
                                         }.toTypedArray())
                                     } catch (e: Exception) {
                                         errorType = true
-                                        println("出现异常（后续操作继续）：${file.path},line:$lineIndex" + e.localizedMessage)
+                                        println("出现异常（后续操作继续）：${file.path},line:$line" + e.localizedMessage)
                                         e.printStackTrace()
                                     }
                                     return finalLine
@@ -65,7 +87,7 @@ object KeyConvertCore {
                             processErrorFileList.add(file.path)
                         }
                     }
-                    return finalLine
+                    return finalLine.replace(placeholder, special)
                 }
             },
             fileFilter = object : FileFilter {
@@ -74,8 +96,10 @@ object KeyConvertCore {
                     val second = splitFileByDot.second
                     //只替换这些文件
                     //return second != null && (second == "java" || second == "kt")
-                    return second != null && (second == "m")
+                    //return second != null && (second == "m")
                     //return second != null && (second == "xml")
+                    //return second != null && file.name.equals("strings.xml")
+                    return second == "java" || second == "kt" || second == "xml" || second == "m"
                 }
             },
             scanFinishConsumer = object : Consumer<Boolean> {

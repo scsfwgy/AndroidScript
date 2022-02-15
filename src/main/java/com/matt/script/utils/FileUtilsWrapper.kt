@@ -35,7 +35,7 @@ object FileUtilsWrapper {
         listFileByPath.forEach { file ->
             if (!fileFilter.filter(file)) {
                 if (KeyConvertCore.debug) {
-                    println("该文件已被fileFilter过滤，不进行解析")
+                    println("该文件已被fileFilter过滤，不进行解析:" + file.name)
                 }
                 return@forEach
             }

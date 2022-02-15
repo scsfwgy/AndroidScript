@@ -38,6 +38,10 @@ object RegexUtilsWrapper {
         (?<=@string/)$pureKeyRegex
     """.trimIndent()
 
+    val stringXmlPureKeyRegex = """
+        (?<=name=")$pureKeyRegex
+    """.trimIndent()
+
     val iosPureKeyRegex = """
         (?<=RDLocalizedString\(@")[a-zA-Z0-9\u4e00-\u9fa5_.\\、。"]+(?="\))
     """.trimIndent()
@@ -86,10 +90,13 @@ object RegexUtilsWrapper {
 
     fun line2FormatLine(
         line: String,
-        valueRegex: String,
+        valueRegex: String?,
         replace: String = "%s",
         formatLineConvert: FormatLineConvert,
     ): String {
+        if (valueRegex == null) {
+            return formatLineConvert.formatLine2NewLine(line, null)
+        }
         val keyList = RegexUtils.getMatches(valueRegex, line)
         return if (keyList.isNotEmpty()) {
             val newFormatLine = RegexUtils.getReplaceAll(line, valueRegex, replace)
