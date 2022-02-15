@@ -21,7 +21,7 @@ object XmlCore {
         if (!file.exists()) {
             throw IllegalAccessException("stringsXml2Map文件不存在:" + stringsXmlPath)
         }
-        val map = HashMap<String, String>()
+        val map = LinkedHashMap<String, String>()
         val sortKeyList = ArrayList<String>()
         val readText = file.readText()
         val matches = RegexUtilsWrapper.lines2StringXmlLineList(readText)

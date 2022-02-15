@@ -5,7 +5,10 @@ import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
 
 fun main() {
-    RegexUtilsWrapper.test()
+    println(RegexUtilsWrapper.hasChinese("你好"))
+    println(RegexUtilsWrapper.hasChinese("22你21312好"))
+    println(RegexUtilsWrapper.hasChinese("123"))
+    println(RegexUtilsWrapper.hasChinese("啥啥啥"))
 }
 
 object RegexUtilsWrapper {
@@ -109,5 +112,13 @@ object RegexUtilsWrapper {
                 println(matches)
             }
         }
+    }
+
+    fun hasChinese(data: String): Boolean {
+        return RegexUtils.isMatch(
+            """
+            .*[\u4e00-\u9fa5]+.*
+        """.trimIndent(), data
+        )
     }
 }
