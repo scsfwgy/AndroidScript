@@ -26,16 +26,16 @@ object FileUtilsWrapper {
      * @param fileFilter 处理哪些文件
      */
     fun scanDirList(
-        dirPath: String,
+        dirPath: List<String>,
         linePretreatment: LinePretreatment,
         fileFilter: FileFilter,
         scanFinishConsumer: Consumer<Boolean>
     ) {
-        val listFileByPath = listFileByPath(dirPath)
+        val listFileByPath = listFileByPathList(dirPath)
         listFileByPath.forEach { file ->
             if (!fileFilter.filter(file)) {
                 if (KeyConvertCore.debug) {
-                    println("该文件已被fileFilter过滤，不进行解析:" + file.name)
+                    //println("该文件已被fileFilter过滤，不进行解析:" + file.name)
                 }
                 return@forEach
             }
@@ -70,6 +70,19 @@ object FileUtilsWrapper {
         val name = file.name
         FileUtils.delete(file)
         FileUtils.rename(tempFile, name)
+    }
+
+    fun listFileByPathList(
+        pathList: List<String>,
+        filterSuffix: String? = null,
+        filterPrefix: String? = null
+    ): List<File> {
+        val map = pathList.map { listFileByPath(it, filterSuffix, filterPrefix) }
+        val list = ArrayList<File>()
+        map.forEach {
+            list.addAll(it)
+        }
+        return list
     }
 
     /**

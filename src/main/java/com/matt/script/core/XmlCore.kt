@@ -105,6 +105,14 @@ object XmlCore {
         }
     }
 
+    fun sortMap2StringXml(map: Map<String, String>): String {
+        val list = ArrayList<Pair<String, String>>()
+        map.forEach {
+            list.add(Pair(it.key, it.value))
+        }
+        return pairList2StringXml(list)
+    }
+
     fun pairList2StringXml(list: List<Pair<String, String?>>): String {
         return """
 <?xml version="1.0" encoding="utf-8"?>
@@ -120,5 +128,17 @@ object XmlCore {
 
     private fun pair2StringLine(pair: Pair<String, String?>): String {
         return """<string name="${pair.first}">${pair.second}</string>""".trimIndent()
+    }
+
+    /**
+     * 去除strings.xml重复的key
+     */
+    fun stringXmlList2Set(stringsXml: File): String {
+        val stringsXml2Map = stringsXml2Map(stringsXml.path)
+        val list = ArrayList<Pair<String, String>>()
+        stringsXml2Map.forEach {
+            list.add(Pair(it.key, it.value))
+        }
+        return pairList2StringXml(list)
     }
 }

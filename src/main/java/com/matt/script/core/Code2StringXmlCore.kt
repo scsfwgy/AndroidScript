@@ -27,7 +27,8 @@ object Code2StringXmlCore {
         //新生成的key集合
         val newKey = LinkedHashSet<String>()
 
-        FileUtilsWrapper.scanDirList("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp",
+        FileUtilsWrapper.scanDirList(
+            listOf("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp"),
             object : LinePretreatment {
                 override fun line2NewLine(file: File, line: String, lineIndex: Int, lineSize: Int): String {
                     val regex = """

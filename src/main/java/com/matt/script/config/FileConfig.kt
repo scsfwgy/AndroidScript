@@ -7,7 +7,7 @@ object FileConfig {
     val backup = "BackUpFiles"
 
     //要抽取的安卓项目根地址
-    val androidRootPath = "/Users/matt.wang/AsProject/Android-LBK"
+    val androidRootPath = "/Users/matt.wang/AndroidStudioProjects/Android-LBK"
 
     val moduleList = listOf(
         "app",
@@ -17,21 +17,21 @@ object FileConfig {
     val resRootDir = "src/main/res"
 
     val languageDirNameList = listOf(
-        Pair("values", "values(默认语言，中文)"),
-        Pair("values-ar", "values-ar(阿拉伯语)"),
-        Pair("values-de", "values-de(德语)"),
-        Pair("values-en", "values-en(英文)"),
-        Pair("values-es-rES", "values-es-rES(西班牙文)"),
-        Pair("values-fa", "values-fa(波斯语)"),
-        Pair("values-hi", "values-hi(印地语)"),
-        Pair("values-it", "values-it(意大利语)"),
-        Pair("values-kn", "values-kn(印尼文)"),
-        Pair("values-ko", "values-ko(韩文)"),
-        Pair("values-pt-rPT", "values-pt-rPT(葡萄牙文)"),
-        Pair("values-ru-rRU", "values-ru-rRU(俄语)"),
-        Pair("values-tr-rTR", "values-tr-rTR(土耳其文)"),
-        Pair("values-vi", "values-vi(越南文)"),
-        Pair("values-zh-rTW", "values-zh-rTW(繁体中文)"),
+        Triple("values", "zh-CN", "默认语言，中文"),
+        Triple("values-en", "en-US", "英文"),
+        Triple("values-zh-rTW", "zh-TW", "繁体中文"),
+        Triple("values-ko", "ko-KR", "韩文"),
+        Triple("values-vi", "vi-VN", "越南文"),
+        Triple("values-pt-rPT", "pt", "葡萄牙文"),
+        Triple("values-es-rES", "es", "西班牙文"),
+        Triple("values-kn", "id", "印尼文"),
+        Triple("values-ru-rRU", "ru", "俄语"),
+        Triple("values-tr-rTR", "tr", "土耳其文"),
+        Triple("values-de", "de", "德语"),
+        Triple("values-it", "it", "意大利语"),
+        Triple("values-hi", "hi", "印地语"),
+        Triple("values-ar", "ar", "阿拉伯语"),
+        Triple("values-fa", "fa", "波斯语"),
     )
     val stringsXmlFileName = "strings.xml"
 
