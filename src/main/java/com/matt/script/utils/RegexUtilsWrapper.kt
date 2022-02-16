@@ -42,6 +42,7 @@ object RegexUtilsWrapper {
         (?<=name=")$pureKeyRegex
     """.trimIndent()
 
+    //(?<=RDLocalizedString\(@")((?!").)+(?="\))
     val iosPureKeyRegex = """
         (?<=RDLocalizedString\(@")[a-zA-Z0-9\u4e00-\u9fa5_.\\、。"]+(?="\))
     """.trimIndent()
@@ -49,6 +50,28 @@ object RegexUtilsWrapper {
     //包含%，不包含%s
     val iosSpecialRegex = """
         (?!%s)%
+    """.trimIndent()
+
+    /**
+     * 包含中文的字符串，包含前后",举例：xxx"xxx你好xxx"生生世世=>"xxx你好xxx"
+     */
+    val containsZhRegex = """
+        "(.(?!"))*[\u4e00-\u9fa5]+((?!").)*"
+    """.trimIndent()
+
+    /**
+     * 包含中文的字符串，不包含前后",举例：xxx"xxx你好xxx"生生世世=>xxx你好xxx
+     */
+    val containsZhRegex2 = """
+        (?<=")(.(?!"))*[\u4e00-\u9fa5]+((?!").)*(?=")
+    """.trimIndent()
+
+    val xmlAllContentRegex = """
+        (?<=android:text=")((?!@string/).*)(?=")
+    """.trimIndent()
+
+    val xmlContainerZhContentRegex = """
+        (?<=android:text=")((?!@string/).)*[\u4e00-\u9fa5]+((?!").)*(?=")
     """.trimIndent()
 
     /**

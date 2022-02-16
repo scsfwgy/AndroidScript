@@ -167,10 +167,7 @@ object FileUtilsWrapper {
     }
 
     fun getFileByCreate(path: String): File {
-        val file = File(path)
-        if (!file.exists()) {
-            file.createNewFile()
-        }
-        return file
+        FileUtils.createOrExistsFile(path)
+        return File(path)
     }
 }

@@ -3,40 +3,89 @@ package com.matt.script.core
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import java.io.File
-import java.util.*
 import java.util.function.Consumer
-import kotlin.collections.HashMap
-import kotlin.collections.LinkedHashSet
 
 fun main() {
     Code2StringXmlCore.test()
 }
 
 object Code2StringXmlCore {
+    var count = 0
 
     fun test() {
-        val excel2Map =
-            ExcelCore.excel2Map(File("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/keyTOkey.xls"), 0, 1)
+        val map = LinkedHashMap<String, String>()
+        map["key1"] = "模拟已存在key_kt"
+        map["key2"] = "测试重复key_xml"
+        code2StringXmlCore(
+            listOf("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp"),
+            map,
+            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/values/strings.xml",
+            object : FileLineParse {
+                override fun parse(file: File): Triple<String?, String?, PlaceHolderFilter?>? {
+                    val fileByDot = FileUtilsWrapper.splitFileByDot(file)
+                    return when (fileByDot.second) {
+                        "java", "kt" -> {
+                            return Triple(
+                                RegexUtilsWrapper.containsZhRegex, """
+                                            MyContextUtils2.getString(R.string.%s)
+                                        """.trimIndent(), object : PlaceHolderFilter {
+                                    override fun placeholder2RealWords(placeholder: String): String {
+                                        return placeholder.replace(
+                                            """
+                                            "
+                                        """.trimIndent(), ""
+                                        )
+                                    }
 
-        val oldKey2NewKeyMap=XmlCore.stringsXml2Map("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml").toMutableMap()
-        //支持添加
-//        val oldKey2NewKeyMap = HashMap<String, String>()
-//        excel2Map.forEach {
-//            oldKey2NewKeyMap[it.key] = it.value[1]
-//        }
+                                }
+                            )
+                        }
+                        "xml" -> {
+                            return Triple(
+                                RegexUtilsWrapper.xmlContainerZhContentRegex,
+                                """@string/%s""".trimIndent(),
+                                object : PlaceHolderFilter {
+                                    override fun placeholder2RealWords(placeholder: String): String {
+                                        return placeholder
+                                    }
+
+                                }
+                            )
+                        }
+                        else -> {
+                            null
+                        }
+                    }
+                }
+
+            }
+        )
+    }
+
+    /**
+     * 入口
+     */
+    fun code2StringXmlCore(
+        scanPathList: List<String>,
+        sortedLanguageMap: Map<String, String>,
+        outputStringXmlPath: String,
+        fileLineParse: FileLineParse,
+    ) {
+        val oldKey2NewKeyMap = sortedLanguageMap.toMutableMap()
+
         //新生成的key集合
         val newKey = LinkedHashSet<String>()
 
-        FileUtilsWrapper.scanDirList(
-            listOf("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp"),
+        FileUtilsWrapper.scanDirList(scanPathList,
             object : LinePretreatment {
                 override fun line2NewLine(file: File, line: String, lineIndex: Int, lineSize: Int): String {
-                    val regex = """
-                        ".*?"
-                    """.trimIndent()
+                    val parsePair = fileLineParse.parse(file)
+                    val first = parsePair?.first ?: return line
+                    val second = parsePair.second ?: return line
+                    val placeHolderFilter = parsePair.third ?: return line
                     return RegexUtilsWrapper.line2FormatLine(
                         line,
-                        regex,
+                        first,
                         formatLineConvert = object : FormatLineConvert {
                             override fun formatLine2NewLine(
                                 formatLine: String,
@@ -44,18 +93,13 @@ object Code2StringXmlCore {
                             ): String {
                                 if (placeholderList.isNullOrEmpty()) return formatLine
                                 val valueList = placeholderList.map {
-                                    val pureWord = it.substring(1, it.length - 1)
-                                    if (!RegexUtilsWrapper.hasChinese(pureWord)) {
-                                        it
-                                    } else {
-                                        val generateNewKey = value2StringKeyAuto(file, pureWord, oldKey2NewKeyMap)
-                                        val key = generateNewKey.second
-                                        if (generateNewKey.first) {
-                                            newKey.add(key)
-                                        }
-                                        """MyContextUtils22222.getString(R.string.${key})"""
+                                    val pureWord = placeHolderFilter.placeholder2RealWords(it)
+                                    val generateNewKey = value2StringKeyAuto(file, pureWord, oldKey2NewKeyMap)
+                                    val key = generateNewKey.second
+                                    if (generateNewKey.first) {
+                                        newKey.add(key)
                                     }
-
+                                    second.format(key)
                                 }.toTypedArray()
                                 return formatLine.format(*valueList)
                             }
@@ -67,9 +111,10 @@ object Code2StringXmlCore {
                     val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                     val second = splitFileByDot.second
                     //只替换这些文件
-                    return second != null && (second == "java" || second == "kt")
+                    //return second != null && (second == "java" || second == "kt")
                     //return second != null && (second == "m")
                     //return second != null && (second == "xml")
+                    return true
                 }
             },
             scanFinishConsumer = object : Consumer<Boolean> {
@@ -80,27 +125,14 @@ object Code2StringXmlCore {
                     //开始写入xml
                     val pairList2StringXml = XmlCore.pairList2StringXml(oldKey2NewKeyMap.toList())
                     println(pairList2StringXml)
+
+                    println("------")
+
+                    val stringXmlPath = FileUtilsWrapper.getFileByCreate(outputStringXmlPath)
+                    stringXmlPath.writeText(pairList2StringXml)
+                    println("操作完成：" + stringXmlPath)
                 }
             })
-    }
-
-//    fun line2SortMap(
-//        file: File,
-//        line: String,
-//        valueRegex: String,
-//        map: MutableMap<String, String>,
-//    ): MutableMap<String, String> {
-//        return RegexUtilsWrapper.line2FormatLine(line, valueRegex, formatLineConvert = object : FormatLineConvert {
-//            override fun formatLine2NewLine(formatLine: String, placeholderList: List<String>?): String {
-//
-//            }
-//
-//        })
-//    }
-
-    fun value2StringKeyWrapper(file: File, value: String, map: MutableMap<String, String>): String {
-        val key = value2StringKey(file, value, map)
-        return """MyContextUtils.getString(R.string.${key})"""
     }
 
     fun value2StringKeyAuto(file: File, value: String, map: MutableMap<String, String>): Pair<Boolean, String> {
@@ -123,7 +155,7 @@ object Code2StringXmlCore {
     }
 
     fun generateNewKey(file: File, map: Map<String, String>): String {
-        val key = file.name + "_" + System.currentTimeMillis() + Random().nextDouble()
+        val key = file.name + "_" + System.currentTimeMillis() + "_" + count++
         if (map[key] != null) {
             throw IllegalAccessException("新生成的key已存在！！！=》" + key)
         }
