@@ -53,7 +53,7 @@ object KeyConvertCore {
                 "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main"
             ),
             linePretreatment = object : LinePretreatment {
-                override fun line2NewLine(file: File, line: String, lineIndex: Int, lineSize: Int): String {
+                override fun line2NewLine(file: File,fileContent: String, line: String, lineIndex: Int, lineSize: Int): String {
                     val placeholder = "~~~~~~~~~"
                     val special = "%"
                     //val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
@@ -144,7 +144,7 @@ object KeyConvertCore {
                 val filePath = FileConfig.getFullDefaultValuesPath(module.key, l.key)
                 val file = File(filePath)
                 //转换过程已经去重
-                val stringsXml2Map = XmlCore.stringsXml2Map(filePath)
+                val stringsXml2Map = XmlCore.stringsXml2SortMap(filePath)
                 val list = ArrayList<Pair<String, String>>()
                 stringsXml2Map.forEach {
                     val key = it.key
@@ -176,7 +176,7 @@ object KeyConvertCore {
                         languageTriple.first
                     )
                 }
-            val mapList = stringsXmlPathList.map { XmlCore.stringsXml2Map(it) }
+            val mapList = stringsXmlPathList.map { XmlCore.stringsXml2SortMap(it) }
             val map = LinkedHashMap<String, String>()
             mapList.forEach { kv ->
                 map.putAll(kv)

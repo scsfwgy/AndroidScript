@@ -4,7 +4,6 @@ import com.matt.script.config.FileConfig
 import com.matt.script.config.GlobalConfig
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
-import com.matt.script.utils.blankj.RegexUtils
 import com.matt.script.utils.blankj.TimeUtils
 import java.io.File
 
@@ -38,7 +37,7 @@ object XmlCore {
         return Pair(map, sortKeyList)
     }
 
-    fun stringsXml2Map(stringsXmlPath: String): Map<String, String> {
+    fun stringsXml2SortMap(stringsXmlPath: String): Map<String, String> {
         return stringsXml2CacheKV(stringsXmlPath).first
     }
 
@@ -62,7 +61,7 @@ object XmlCore {
             val map = FileConfig.languageDirNameList.map {
                 val stringXmlPath = pathPair.second + "/" + it.first + "/" + FileConfig.stringsXmlFileName
                 //LoggerImp.logger.d(TAG, "foreachModuleLanguageXml:" + stringXmlPath)
-                val stringsXml2Map = stringsXml2Map(stringXmlPath)
+                val stringsXml2Map = stringsXml2SortMap(stringXmlPath)
                 Triple(it.first, it.second, stringsXml2Map)
             }
             //模块名，各级的翻译
@@ -134,7 +133,7 @@ object XmlCore {
      * 去除strings.xml重复的key
      */
     fun stringXmlList2Set(stringsXml: File): String {
-        val stringsXml2Map = stringsXml2Map(stringsXml.path)
+        val stringsXml2Map = stringsXml2SortMap(stringsXml.path)
         val list = ArrayList<Pair<String, String>>()
         stringsXml2Map.forEach {
             list.add(Pair(it.key, it.value))

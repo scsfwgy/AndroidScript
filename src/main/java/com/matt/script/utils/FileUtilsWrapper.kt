@@ -55,9 +55,10 @@ object FileUtilsWrapper {
         val tempFile = File(file.parentFile.path, file.name + backUpSuffix)
         //清空
         tempFile.writeText("")
+        val content = file.readText()
         val readLines = file.readLines()
         readLines.forEachIndexed { index, line1 ->
-            val newLine = linePretreatment.line2NewLine(file, line1, index, readLines.size)
+            val newLine = linePretreatment.line2NewLine(file, content, line1, index, readLines.size)
             //println(newLine)
             tempFile.appendText(newLine)
             //写入默认,最后一行就不要写入换行符

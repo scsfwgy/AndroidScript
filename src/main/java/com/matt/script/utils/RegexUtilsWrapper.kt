@@ -74,6 +74,10 @@ object RegexUtilsWrapper {
         (?<=android:text=")((?!@string/).)*[\u4e00-\u9fa5]+((?!").)*(?=")
     """.trimIndent()
 
+    val javaOrKtContainerR = """
+        import(.)*\.R;*\n
+    """.trimIndent()
+
     /**
      * 输入多行数据，匹配strings.xml中单行文案:<string name="Home">首页</string>
      */
