@@ -13,6 +13,7 @@ fun main() {
     //KeyConvertCore.value2NewValue()
     //KeyConvertCore.appStringsXml2WrapperStringsXml()
     KeyConvertCore.removeUnUseStringXmlKey()
+    //KeyConvertCore.stringXmlMarkFlag()
 }
 
 object KeyConvertCore {
@@ -210,7 +211,7 @@ object KeyConvertCore {
      */
     fun removeUnUseStringXmlKey() {
         val stringXml =
-            File("/Users/matt.wang/AsProject/Android-LBK/third_part_lib/mycommonlib/src/main/res/values/strings.xml")
+            File("/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main/res/values/strings.xml")
         val findKeySet = HashSet<String>()
         val stringsXml2SortMap =
             XmlCore.stringsXml2SortMap(stringXml.path)
@@ -267,16 +268,44 @@ object KeyConvertCore {
                 println("====处理完毕===")
                 val unFindKeySet = stringsXml2SortMap.keys.toMutableSet()
                 unFindKeySet.removeAll(findKeySet)
-                println("使用列表：" + findKeySet)
-                println("未使用列表：" + unFindKeySet)
+                println("未使用列表：" + findKeySet)
+                println("使用列表：" + unFindKeySet)
 
-                println("====开始回写=====")
-                val stringMap = stringsXml2SortMap.filter { findKeySet.contains(it.key) }
-                val sortMap2StringXml = XmlCore.sortMap2StringXml(stringMap)
-                stringXml.writeText(sortMap2StringXml)
-                println("====回写结束=====")
+//                println("====开始回写=====")
+//                val stringMap = stringsXml2SortMap.filter { findKeySet.contains(it.key) }
+//                val sortMap2StringXml = XmlCore.sortMap2StringXml(stringMap)
+//                stringXml.writeText(sortMap2StringXml)
+//                println("====回写结束=====")
             }
         })
+    }
+
+    /**
+     * 对所有文案打标记，方便测试
+     */
+    fun stringXmlMarkFlag() {
+        println("===========对所有文案打标记，方便测试============")
+        FileConfig.languageDirNameList.forEach { languageTriple ->
+            val stringsXmlPath = FileConfig.getFullDefaultValuesPath(
+                FileConfig.moduleList[1],
+                languageTriple.first
+            )
+            val second = languageTriple.second
+            val suffix = second.substring(second.length - 2)
+            val map = XmlCore.stringsXml2SortMap(stringsXmlPath)
+            val newMap = LinkedHashMap<String, String>()
+            map.forEach {
+                newMap[it.key] = it.value + "_" + suffix
+            }
+
+            val sortMap2StringXml = XmlCore.sortMap2StringXml(newMap)
+
+            //wrapper
+            val wrapperValuesPath =
+                FileConfig.getFullDefaultValuesPath(FileConfig.moduleList[1], languageTriple.first)
+            val file = File(wrapperValuesPath)
+            file.writeText(sortMap2StringXml)
+        }
     }
 
 }
