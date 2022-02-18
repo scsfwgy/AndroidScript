@@ -3,6 +3,7 @@ package com.matt.script.core
 import com.matt.script.config.FileConfig
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
+import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
 import java.util.function.Consumer
 
@@ -10,7 +11,8 @@ fun main() {
     //KeyConvertCore.scanCore()
     //KeyConvertCore.stringXmlList2Set()
     //KeyConvertCore.value2NewValue()
-    KeyConvertCore.appStringsXml2WrapperStringsXml()
+    //KeyConvertCore.appStringsXml2WrapperStringsXml()
+    KeyConvertCore.removeUnUseStringXmlKey()
 }
 
 object KeyConvertCore {
@@ -53,7 +55,13 @@ object KeyConvertCore {
                 "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main"
             ),
             linePretreatment = object : LinePretreatment {
-                override fun line2NewLine(file: File,fileContent: String, line: String, lineIndex: Int, lineSize: Int): String {
+                override fun line2NewLine(
+                    file: File,
+                    fileContent: String,
+                    line: String,
+                    lineIndex: Int,
+                    lineSize: Int
+                ): String {
                     val placeholder = "~~~~~~~~~"
                     val special = "%"
                     //val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
@@ -195,6 +203,80 @@ object KeyConvertCore {
             File(appValuesPath).delete()
         }
 
+    }
+
+    /**
+     * 找到未使用的语言key并移除
+     */
+    fun removeUnUseStringXmlKey() {
+        val stringXml =
+            File("/Users/matt.wang/AsProject/Android-LBK/third_part_lib/mycommonlib/src/main/res/values/strings.xml")
+        val findKeySet = HashSet<String>()
+        val stringsXml2SortMap =
+            XmlCore.stringsXml2SortMap(stringXml.path)
+//        stringsXml2SortMap.forEach {
+//            println(it.key + "-->" + it.value)
+//        }
+        FileUtilsWrapper.scanDirList(listOf(
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/MPChartLib/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/mycommonlib/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/faceidmodule/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/lbankcorelib/src/main",
+        ), object : LinePretreatment {
+            fun findKeyFun(keyList: List<String>) {
+                keyList.forEach {
+                    val s = stringsXml2SortMap[it]
+                    if (s != null) {
+                        findKeySet.add(it)
+                    }
+                }
+            }
+
+            override fun line2NewLine(
+                file: File,
+                fileContent: String,
+                line: String,
+                lineIndex: Int,
+                lineSize: Int
+            ): String {
+                val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
+                val second = splitFileByDot.second
+                if (second == "java" || second == "kt") {
+                    val list = RegexUtils.getMatches(RegexUtilsWrapper.javaOrKtPureKeyRegex, line)
+                    if (list.isNotEmpty()) {
+                        findKeyFun(list)
+                    }
+                } else if (second == "xml") {
+                    val list = RegexUtils.getMatches(RegexUtilsWrapper.xmlPureKeyRegex, line)
+                    if (list.isNotEmpty()) {
+                        findKeyFun(list)
+                    }
+                }
+                return line
+            }
+        }, object : FileFilter {
+            override fun filter(file: File): Boolean {
+                val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
+                val second = splitFileByDot.second
+                return second == "java" || second == "kt" || second == "xml" || second == "m"
+            }
+        }, object : Consumer<Boolean> {
+            override fun accept(t: Boolean) {
+                println("====处理完毕===")
+                val unFindKeySet = stringsXml2SortMap.keys.toMutableSet()
+                unFindKeySet.removeAll(findKeySet)
+                println("使用列表：" + findKeySet)
+                println("未使用列表：" + unFindKeySet)
+
+                println("====开始回写=====")
+                val stringMap = stringsXml2SortMap.filter { findKeySet.contains(it.key) }
+                val sortMap2StringXml = XmlCore.sortMap2StringXml(stringMap)
+                stringXml.writeText(sortMap2StringXml)
+                println("====回写结束=====")
+            }
+        })
     }
 
 }
