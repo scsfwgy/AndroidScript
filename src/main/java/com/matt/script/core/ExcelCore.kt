@@ -1,60 +1,72 @@
 package com.matt.script.core
 
 import com.matt.script.config.FileConfig
+import com.matt.script.log.LogUtils
+import com.matt.script.utils.ExcelUtils
+import com.matt.script.utils.FileUtilsWrapper
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.CellType
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
 object ExcelCore {
 
+    /**
+     * 将语言导出为标准的产品需要的格式 strings.xml List=>Excel
+     */
     fun lbkXml2Excel() {
-
-    }
-
-    fun baseXml2Excel(
-        generateExcelFile: File,
-        rowList: List<List<String?>>,
-        sheetName: String? = "DefaultSheetName"
-    ): Boolean {
-        //创建Excel工作簿对象
-        val wb = XSSFWorkbook()
-        //创建Excel工作表对象
-        val sheet = wb.createSheet(sheetName)
-
-        rowList.forEach { row ->
-            val lastRow = sheet.lastRowNum
-            val currentRowIndex = lastRow + 1
-            val hssfRow = sheet.createRow(currentRowIndex)
-            row.forEachIndexed { index, cell ->
-                hssfRow.createCell(index).setCellValue(cell ?: "")
+        println("===========将语言导出为标准的产品需要的格式============")
+        val stringListMap = FileConfig.languageDirNameList.map { languageTriple ->
+            val stringsXmlPath = FileConfig.getFullDefaultValuesPath(
+                FileConfig.moduleList[1],
+                languageTriple.first
+            )
+            val second = languageTriple.second
+            val suffix = second.substring(second.length - 2)
+            val realSuffix = "_" + suffix
+            val map = XmlCore.stringsXml2SortMap(stringsXmlPath)
+            val newMap = LinkedHashMap<String, String>()
+            map.forEach {
+                newMap[it.key] = it.value.replace(realSuffix, "")
             }
-        }
-        wb.write(FileOutputStream(generateExcelFile))
-        return true
-    }
 
-    fun baseExcel2StringXml(excelPath: String, sheetIndex: Int = 0, beginRow: Int = 0): List<List<String?>> {
-        val fileInputStream = FileInputStream(excelPath)
-        val wb = XSSFWorkbook(fileInputStream)
-        val sheet = wb.getSheetAt(sheetIndex)
-        val finalList = ArrayList<List<String?>>()
-        sheet.forEachIndexed { index, row ->
-            if (index < beginRow) return@forEachIndexed
+            newMap
+        }
+
+        //默认
+        val keyList = stringListMap[0].keys
+
+        val realList = ArrayList<List<String?>>()
+
+        val headList = ArrayList<String?>()
+        headList.add("defaultKey")
+        headList.add("key")
+        headList.add("newkey")
+        FileConfig.languageDirNameList.forEach {
+            headList.add(it.second)
+        }
+        realList.add(headList)
+
+        keyList.forEach { key ->
+            val isNewKey = key.startsWith("L0")
             val itemList = ArrayList<String?>()
-            val lastCellNum = row.lastCellNum.toInt()
-            for (itemIndex in 0 until lastCellNum) {
-                val cell = row.getCell(itemIndex)
-                cell?.cellType = CellType.STRING
-                val value = cell?.stringCellValue ?: ""
-                itemList.add(value)
+            itemList.add(if (isNewKey) null else key)
+            itemList.add(if (isNewKey) key.filterIndexed { index, _ -> index < 8 } else null)
+            itemList.add(if (isNewKey) key else null)
+            stringListMap.forEach {
+                itemList.add(it[key])
             }
-            finalList.add(itemList)
+            realList.add(itemList)
         }
-        fileInputStream.close()
-        return finalList
+        LogUtils.loggerWrapper(KeyConvertCore::class.java)
+            .debug("==>" + realList.size + "," + realList.firstOrNull()?.size)
+        val excelFileName = "Android多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultFileSuffixName() + ".xlsx"
+        ExcelUtils.baseXml2Excel(
+            FileUtilsWrapper.getFileByCreate("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/" + excelFileName),
+            realList,
+            "Android语言集合"
+        )
     }
 
     /**

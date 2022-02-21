@@ -3,12 +3,10 @@ package com.matt.script.utils
 import com.matt.script.core.FileFilter
 import com.matt.script.core.KeyConvertCore
 import com.matt.script.core.LinePretreatment
-import com.matt.script.log.LoggerImp
+import com.matt.script.log.LogUtils
 import com.matt.script.utils.blankj.FileUtils
 import com.matt.script.utils.blankj.TimeUtils
 import java.io.File
-import java.lang.IllegalArgumentException
-import java.lang.StringBuilder
 import java.util.function.Consumer
 
 /**
@@ -126,7 +124,7 @@ object FileUtilsWrapper {
                         filterPrefix == prefixName
                     }
                     filterSuffix != null -> {
-                        LoggerImp.logger.d(TAG, "$filterSuffix,$suffixName", false)
+                        LogUtils.loggerWrapper(FileUtilsWrapper.javaClass).debug("$filterSuffix,$suffixName" + false)
                         filterSuffix == suffixName
                     }
                     else -> {
