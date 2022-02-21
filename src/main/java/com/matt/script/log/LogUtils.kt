@@ -1,6 +1,6 @@
 package com.matt.script.log
 
-import java.lang.IllegalArgumentException
+import org.apache.log4j.Logger
 
 /**
  * ============================================================
@@ -10,11 +10,7 @@ import java.lang.IllegalArgumentException
  * ============================================================
  **/
 object LogUtils {
-    fun throwWrapper(msg: String? = null) {
-        throwWrapper(IllegalArgumentException(msg ?: ""))
-    }
-
-    fun throwWrapper(throwable: Throwable? = null) {
-        throw throwable ?: IllegalArgumentException("默认抛出的错误")
+    fun loggerWrapper(clazz: Class<*>): Logger {
+        return Logger.getLogger(clazz)
     }
 }

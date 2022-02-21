@@ -7,7 +7,7 @@ object FileConfig {
     val backup = "BackUpFiles"
 
     //要抽取的安卓项目根地址
-    val androidRootPath = "/Users/matt.wang/AsProject/Android-LBK"
+    val androidRootPath = "/Users/matt.wang/AndroidStudioProjects/Android-LBK"
 
     val moduleList = listOf(
         "app",

@@ -1,5 +1,6 @@
 import com.matt.script.AndroidScript
 import com.matt.script.core.KeyConvertCore
+import org.apache.log4j.Logger
 
 fun main(args: Array<String>) {
     /**

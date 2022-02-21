@@ -1,6 +1,7 @@
 package com.matt.script.core
 
 import com.matt.script.config.FileConfig
+import com.matt.script.log.LogUtils
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.RegexUtils
@@ -12,8 +13,10 @@ fun main() {
     //KeyConvertCore.stringXmlList2Set()
     //KeyConvertCore.value2NewValue()
     //KeyConvertCore.appStringsXml2WrapperStringsXml()
-    KeyConvertCore.removeUnUseStringXmlKey()
+    //KeyConvertCore.removeUnUseStringXmlKey()
     //KeyConvertCore.stringXmlMarkFlag()
+    KeyConvertCore.lbkXml2Excel()
+    // KeyConvertCore.lbkExcel2StringXml()
 }
 
 object KeyConvertCore {
@@ -306,6 +309,74 @@ object KeyConvertCore {
             val file = File(wrapperValuesPath)
             file.writeText(sortMap2StringXml)
         }
+    }
+
+    /**
+     * 将语言导出为标准的产品需要的格式
+     */
+    fun lbkXml2Excel() {
+        println("===========将语言导出为标准的产品需要的格式============")
+        val stringListMap = FileConfig.languageDirNameList.map { languageTriple ->
+            val stringsXmlPath = FileConfig.getFullDefaultValuesPath(
+                FileConfig.moduleList[1],
+                languageTriple.first
+            )
+            val second = languageTriple.second
+            val suffix = second.substring(second.length - 2)
+            val realSuffix = "_" + suffix
+            val map = XmlCore.stringsXml2SortMap(stringsXmlPath)
+            val newMap = LinkedHashMap<String, String>()
+            map.forEach {
+                newMap[it.key] = it.value.replace(realSuffix, "")
+            }
+
+            newMap
+        }
+
+        //默认
+        val keyList = stringListMap[0].keys
+
+        val realList = ArrayList<List<String?>>()
+
+        val headList = ArrayList<String?>()
+        headList.add("defaultKey")
+        headList.add("key")
+        headList.add("newkey")
+        FileConfig.languageDirNameList.forEach {
+            headList.add(it.second)
+        }
+        realList.add(headList)
+
+        keyList.forEach { key ->
+            val isNewKey = key.startsWith("L0")
+            val itemList = ArrayList<String?>()
+            itemList.add(if (isNewKey) null else key)
+            itemList.add(if (isNewKey) key.filterIndexed { index, _ -> index < 8 } else null)
+            itemList.add(if (isNewKey) key else null)
+            stringListMap.forEach {
+                itemList.add(it[key])
+            }
+            realList.add(itemList)
+        }
+        LogUtils.loggerWrapper(KeyConvertCore::class.java)
+            .debug("==>" + realList.size + "," + realList.firstOrNull()?.size)
+        val excelFileName = "Android多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultFileSuffixName() + ".xlsx"
+        ExcelCore.baseXml2Excel(
+            FileUtilsWrapper.getFileByCreate("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/" + excelFileName),
+            realList,
+            "Android语言集合"
+        )
+    }
+
+    /**
+     * 将Excel到处为项目用的语言配置
+     */
+    fun lbkExcel2StringXml() {
+        println("===========将Excel到处为项目用的语言配置============")
+        val baseExcel2StringXml =
+            ExcelCore.baseExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-02-21_15-24-39.xlsx")
+        LogUtils.loggerWrapper(KeyConvertCore::class.java)
+            .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
     }
 
 }

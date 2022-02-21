@@ -5,6 +5,7 @@ import com.matt.script.core.KeyConvertCore
 import com.matt.script.core.LinePretreatment
 import com.matt.script.log.LoggerImp
 import com.matt.script.utils.blankj.FileUtils
+import com.matt.script.utils.blankj.TimeUtils
 import java.io.File
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
@@ -170,5 +171,9 @@ object FileUtilsWrapper {
     fun getFileByCreate(path: String): File {
         FileUtils.createOrExistsFile(path)
         return File(path)
+    }
+
+    fun defaultFileSuffixName(): String {
+        return TimeUtils.millis2String(System.currentTimeMillis(), TimeUtils.getSafeDateFormat("yyyy-MM-dd_HH-mm-ss"))
     }
 }
