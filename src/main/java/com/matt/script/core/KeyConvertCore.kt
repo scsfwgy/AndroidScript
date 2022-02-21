@@ -34,11 +34,11 @@ object KeyConvertCore {
         val pair = FileUtilsWrapper.splitFileByDot(file)
         val second = pair.second
         return if (second == "java" || second == "kt") {
-            RegexUtilsWrapper.javaOrKtPureKeyRegex
+            RegexUtilsWrapper.javaOrKtPureStringKeyRegex
         } else if (fileName == "strings.xml") {
             RegexUtilsWrapper.stringXmlPureKeyRegex
         } else if (second == "xml") {
-            RegexUtilsWrapper.xmlPureKeyRegex
+            RegexUtilsWrapper.xmlPureStringKeyRegex
         } else if (second == "m") {
             RegexUtilsWrapper.iosPureKeyRegex
         } else {
@@ -54,7 +54,7 @@ object KeyConvertCore {
             oldKey2NewKeyMap[it.key] = it.value[1]
         }
         val noNewKeyValue = "noNewKeyValue"
-        FileUtilsWrapper.scanDirList(
+        FileUtilsWrapper.scanDirListByLine(
             listOf(
                 "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
                 "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main"
@@ -222,7 +222,7 @@ object KeyConvertCore {
 //        stringsXml2SortMap.forEach {
 //            println(it.key + "-->" + it.value)
 //        }
-        FileUtilsWrapper.scanDirList(listOf(
+        FileUtilsWrapper.scanDirListByLine(listOf(
             "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
             "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main",
             "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/MPChartLib/src/main",
@@ -249,12 +249,12 @@ object KeyConvertCore {
                 val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                 val second = splitFileByDot.second
                 if (second == "java" || second == "kt") {
-                    val list = RegexUtils.getMatches(RegexUtilsWrapper.javaOrKtPureKeyRegex, line)
+                    val list = RegexUtils.getMatches(RegexUtilsWrapper.javaOrKtPureStringKeyRegex, line)
                     if (list.isNotEmpty()) {
                         findKeyFun(list)
                     }
                 } else if (second == "xml") {
-                    val list = RegexUtils.getMatches(RegexUtilsWrapper.xmlPureKeyRegex, line)
+                    val list = RegexUtils.getMatches(RegexUtilsWrapper.xmlPureStringKeyRegex, line)
                     if (list.isNotEmpty()) {
                         findKeyFun(list)
                     }

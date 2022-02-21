@@ -1,7 +1,6 @@
 package com.matt.script.utils
 
 import com.matt.script.core.FileFilter
-import com.matt.script.core.KeyConvertCore
 import com.matt.script.core.LinePretreatment
 import com.matt.script.log.LogUtils
 import com.matt.script.utils.blankj.FileUtils
@@ -19,25 +18,30 @@ import java.util.function.Consumer
 object FileUtilsWrapper {
     val TAG = FileUtilsWrapper::class.java.simpleName
 
+    fun scanDirList(dirPath: List<String>, fileFilter: FileFilter): List<File> {
+        val listFileByPath = listFileByPathList(dirPath)
+        val realList = ArrayList<File>()
+        listFileByPath.forEach { file ->
+            if (fileFilter.filter(file)) {
+                realList.add(file)
+            }
+        }
+        return realList
+    }
+
     /**
      * @param dirPath 扫描的文件夹
      * @param linePretreatment 要处理的行，不需要处理直接返回入参即可
      * @param fileFilter 处理哪些文件
      */
-    fun scanDirList(
+    fun scanDirListByLine(
         dirPath: List<String>,
         linePretreatment: LinePretreatment,
         fileFilter: FileFilter,
         scanFinishConsumer: Consumer<Boolean>
     ) {
-        val listFileByPath = listFileByPathList(dirPath)
-        listFileByPath.forEach { file ->
-            if (!fileFilter.filter(file)) {
-                if (KeyConvertCore.debug) {
-                    //println("该文件已被fileFilter过滤，不进行解析:" + file.name)
-                }
-                return@forEach
-            }
+        val scanDirList = scanDirList(dirPath, fileFilter)
+        scanDirList.forEach { file ->
             replaceFileByLine(file, linePretreatment)
         }
         scanFinishConsumer.accept(true)
@@ -73,9 +77,7 @@ object FileUtilsWrapper {
     }
 
     fun listFileByPathList(
-        pathList: List<String>,
-        filterSuffix: String? = null,
-        filterPrefix: String? = null
+        pathList: List<String>, filterSuffix: String? = null, filterPrefix: String? = null
     ): List<File> {
         val map = pathList.map { listFileByPath(it, filterSuffix, filterPrefix) }
         val list = ArrayList<File>()
@@ -91,13 +93,10 @@ object FileUtilsWrapper {
      * @param filterSuffix 后缀 ""：只显示没有后缀的文件 ；null:不过滤
      */
     fun listFileByPath(
-        path: String,
-        filterSuffix: String? = null,
-        filterPrefix: String? = null
+        path: String, filterSuffix: String? = null, filterPrefix: String? = null
     ): List<File> {
         return FileUtils.listFilesInDirWithFilter(
-            path,
-            { file -> file != null && !file.isDirectory }, true
+            path, { file -> file != null && !file.isDirectory }, true
         ).filter {
             if (filterPrefix == null && filterSuffix == null) {
                 true
@@ -135,6 +134,21 @@ object FileUtilsWrapper {
         }
     }
 
+    fun getFilterDirPath(dirPath: List<String>, childPath: String, fileFilter: FileFilter): List<File> {
+        val map = dirPath.map { dir ->
+            FileUtils.listFilesInDirWithFilter(
+                "$dir/$childPath", { file ->
+                    fileFilter.filter(file)
+                }, true
+            )
+        }
+        val list = ArrayList<File>()
+        map.forEach {
+            list.addAll(it)
+        }
+        return list
+    }
+
     fun splitFileByDot(file: File): Pair<String, String?> {
         val name = file.name
         val index = name.lastIndexOf(".")
@@ -142,6 +156,13 @@ object FileUtilsWrapper {
         val first = name.substring(0, index)
         val second = name.substring(index + 1)
         return Pair(first, second)
+    }
+
+    fun getPureName(file: File): String {
+        val name = file.name
+        if (!name.contains(".")) return name
+        val indexOfFirst = name.indexOfFirst { it == '.' }
+        return name.substring(0, indexOfFirst)
     }
 
     fun readLine(file: File): List<String> {

@@ -30,12 +30,20 @@ object RegexUtilsWrapper {
         [a-zA-Z0-9_.]+
     """.trimIndent()
 
-    val javaOrKtPureKeyRegex = """
+    val javaOrKtPureStringKeyRegex = """
         (?<=R.string\.)$pureKeyRegex
     """.trimIndent()
 
-    val xmlPureKeyRegex = """
+    val javaOrKtPureDrawableKeyRegex = """
+        (?<=R.drawable\.)$pureKeyRegex
+    """.trimIndent()
+
+    val xmlPureStringKeyRegex = """
         (?<=@string/)$pureKeyRegex
+    """.trimIndent()
+
+    val xmlPureDrawableKeyRegex = """
+        (?<=@drawable/)$pureKeyRegex
     """.trimIndent()
 
     val stringXmlPureKeyRegex = """
@@ -52,7 +60,7 @@ object RegexUtilsWrapper {
         (?!%s)%
     """.trimIndent()
 
-    val iosContainerPlaceholderRegex="""
+    val iosContainerPlaceholderRegex = """
         (?<=RDLocalizedString\(@")((?!")(.*(%[df])+.*))(?="\))
     """.trimIndent()
 
