@@ -2,6 +2,8 @@ package com.matt.script.core
 
 import com.matt.script.config.FileConfig
 import com.matt.script.config.GlobalConfig
+import com.matt.script.log.LogUtils
+import com.matt.script.utils.ExcelUtils
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.TimeUtils
@@ -10,6 +12,43 @@ import java.io.File
 object XmlCore {
 
     const val TAG = "CoreWrapper"
+
+    fun lbkExcel2StringXmlDebug() {
+        val path =
+            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Excel2Xml/" + FileUtilsWrapper.defaultFileSuffixName()
+        lbkExcel2StringXml(path)
+    }
+
+    /**
+     * 将Excel到处为项目用的语言配置 Excel=>strings.xml List
+     */
+    fun lbkExcel2StringXml(resPathDir: String) {
+        LogUtils.loggerWrapper(XmlCore.javaClass)
+            .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
+        val baseExcel2StringXml =
+            ExcelUtils.baseExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-02-21_16-14-08.xlsx")
+        LogUtils.loggerWrapper(KeyConvertCore::class.java)
+            .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
+
+        FileConfig.languageDirNameList.forEachIndexed { index, triple ->
+            val dir = FileUtilsWrapper.getDirByCreate(resPathDir + "/" + triple.first)
+            val fileName = "strings.xml"
+            val fullPath = "$dir/$fileName"
+            val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
+            val pairList = baseExcel2StringXml.filterIndexed { index2, _ -> index2 > 0 }.map { itemList ->
+                val defaultKey = itemList[0]
+                //val key = itemList[1]
+                val newKey = itemList[2]
+                val realKey = if (newKey.isNullOrEmpty()) defaultKey ?: "no key" else newKey
+                val value = itemList[index + 3]
+                Pair(realKey, value)
+            }
+            val pairList2StringXml = pairList2StringXml(pairList)
+            fullPatFile.writeText(pairList2StringXml)
+            LogUtils.loggerWrapper(XmlCore.javaClass).debug(fullPatFile.path)
+        }
+
+    }
 
 
     /**

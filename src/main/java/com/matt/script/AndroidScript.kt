@@ -3,8 +3,6 @@ package com.matt.script
 import com.matt.script.config.FileConfig
 import com.matt.script.core.ExcelCore
 import com.matt.script.core.XmlCore
-import com.matt.script.utils.FileUtilsWrapper
-import com.matt.script.utils.blankj.TimeUtils
 
 object AndroidScript {
     /**
@@ -12,14 +10,7 @@ object AndroidScript {
      * 使用前请配置：[FileConfig]
      */
     fun extractAndroidProject2Excel() {
-        val currRootPath = FileConfig.currRootPath
-        val backUpDir = FileUtilsWrapper.getDirByCreate(
-            currRootPath + "/" + FileConfig.backup
-        )
-        val time =
-            TimeUtils.millis2String(System.currentTimeMillis(), TimeUtils.getSafeDateFormat("yyyy-MM-dd_HH-mm-ss"))
-        val excelPath = backUpDir + "/" + "安卓抽取${time}.xls"
-        ExcelCore.xml2Excel(FileUtilsWrapper.getFileByCreate(excelPath))
+       ExcelCore.lbkXml2Excel()
     }
 
 
@@ -27,7 +18,9 @@ object AndroidScript {
      * 把excel回写到备份文件夹中的strings.xml
      */
     fun excel2StringsXml() {
-        val excel2StringXml = "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/副本安卓抽取2022-01-18_18-20-10.xls"
-        XmlCore.excel2StringsXml(excel2StringXml)
+        //测试
+        XmlCore.lbkExcel2StringXmlDebug()
+        //正式
+        //XmlCore.lbkExcel2StringXml("/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main/res")
     }
 }

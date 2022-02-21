@@ -7,22 +7,27 @@ import java.io.File
 import java.util.function.Consumer
 
 fun main() {
-    Code2StringXmlCore.demo(
-        listOf(
-            "/Users/matt.wang/AndroidStudioProjects/MotorHome/app/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/MotorHome/motor_wrapper/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/MotorHome/pack_wrapper/src/main",
-            //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp3"
-        ),
-        XmlCore.stringsXml2SortMap("/Users/matt.wang/AndroidStudioProjects/MotorHome/pack_wrapper/src/main/res/values/strings.xml"),
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/values/strings.xml"
-    )
+    Code2StringXmlCore.lbkAndroidDemo()
 }
 
 object Code2StringXmlCore {
     var count = 0
 
-    fun demo(scanDirList: List<String>, sortMap: Map<String, String>, generateStringXmlPath: String) {
+    fun lbkAndroidDemo() {
+        androidDemo(
+            listOf(
+                "/Users/matt.wang/AndroidStudioProjects/MotorHome/app/src/main",
+                "/Users/matt.wang/AndroidStudioProjects/MotorHome/motor_wrapper/src/main",
+                "/Users/matt.wang/AndroidStudioProjects/MotorHome/pack_wrapper/src/main",
+                //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp3"
+            ),
+            XmlCore.stringsXml2SortMap("/Users/matt.wang/AndroidStudioProjects/MotorHome/pack_wrapper/src/main/res/values/strings.xml"),
+            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/values/strings.xml"
+        )
+    }
+
+
+    fun androidDemo(scanDirList: List<String>, sortMap: Map<String, String>, generateStringXmlPath: String) {
         code2StringXmlCore(scanDirList, sortMap, generateStringXmlPath, fileLineParse = object : FileLineParse {
             override fun parse(file: File): Triple<String?, String?, PlaceHolderFilter?>? {
                 val fileByDot = FileUtilsWrapper.splitFileByDot(file)
