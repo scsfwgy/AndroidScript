@@ -10,3 +10,8 @@
 * 支持通用字符串替换，高度定制化
 * 支持扫描并删除无用Drawable
 * 支持扫描并删除无用strings.xml的语言配置
+
+
+#### 参考
+* [https://github.com/cdoco/learn-regex-zh](https://github.com/cdoco/learn-regex-zh)
+* [https://github.com/Blankj/AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)
