@@ -8,16 +8,17 @@ import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
 
 fun main() {
-    //FindUselessCore.findUselessStringXml()
-    FindUselessCore.findUselessDrawable()
-    //println(FileUtilsWrapper.splitFileByDot(File("/Users/matt.wang/AsProject/Android-LBK/app/src/main/res/drawable-xxhdpi/common_shadow_blur_18_y_4.9.png")))
+    FindUselessCore.findUselessStringXml()
+    //FindUselessCore.findUselessDrawable()
+    //println(FileUtilsWrapper.splitFileByDot(File("/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main/res/drawable-xxhdpi/common_shadow_blur_18_y_4.9.png")))
 }
 
 object FindUselessCore {
+    var count = 0
     fun findUselessStringXml() {
         val dirPath = scanDirList()
         val stringXmlPath =
-            "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/mycommonlib/src/main/res/values/strings.xml"
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/mycommonlib/src/main/res/values/strings.xml"
         val allExistSet = XmlCore.stringsXml2SortKeyList(stringXmlPath).toMutableSet()
         val uselessSet = findUselessSetWrapper(
             dirPath,
@@ -67,9 +68,23 @@ object FindUselessCore {
         LogUtils.loggerWrapper(FindUselessCore.javaClass)
             .debug("待删除文件大小（总计）：" + FileUtils.byte2FitMemorySize(sum, 2))
 
-//        delFileList.forEach {
-//            it.deleteOnExit()
-//        }
+        val delDirs = "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/delDrawable"
+        FileUtils.deleteAllInDir(delDirs)
+        delFileList.forEach {
+            FileUtils.copy(
+                it.path,
+                "$delDirs/" + ((count++).toString() + "_" + it.name
+                        )
+            )
+        }
+        LogUtils.loggerWrapper(FindUselessCore.javaClass)
+            .debug("待删除文件已整理到：$delDirs")
+
+        delFileList.forEach {
+            it.deleteOnExit()
+        }
+        LogUtils.loggerWrapper(FindUselessCore.javaClass)
+            .debug("无用文件已删除：${delFileList.size}")
     }
 
     fun findUselessSetWrapper(
@@ -145,12 +160,12 @@ object FindUselessCore {
 
     fun scanDirList(): List<String> {
         return listOf(
-            "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
-            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main",
-            "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/MPChartLib/src/main",
-            "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/mycommonlib/src/main",
-            "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/faceidmodule/src/main",
-            "/Users/matt.wang/AsProject/Android-LBK/lbankcorelib/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/MPChartLib/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/mycommonlib/src/main",
+            //"/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/faceidmodule/src/main",
+            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lbankcorelib/src/main",
         )
     }
 }
