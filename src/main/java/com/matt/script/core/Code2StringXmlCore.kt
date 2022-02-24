@@ -5,7 +5,6 @@ import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
-import java.util.function.Consumer
 
 fun main() {
     Code2StringXmlCore.lbkAndroidDemo()
@@ -103,7 +102,7 @@ object Code2StringXmlCore {
 
     /**
      * @param scanPathList 待扫描处理的文件夹，越精确越好
-     * @param defaultStringXml2SortMap 默认语言文件strings.xml转化为原有文案顺序的Map。注意：我们认为默认默认strings.xml文案是最全的。
+     * @param defaultStringXml2SortMap 默认语言文件strings.xml转化为原有文案顺序的Map。注意：我们认为默认语言strings.xml文案是最全的。
      * @param newOutputStringXmlPath 处理完的strings.xml，您希望输出到哪？测试完毕后，建议直接输出到项目默认strings.xml所在的文件夹，直接覆盖。
      * @param filePretreatment 文件预处理
      * @param importClass 导包处理，上层调用者处理
@@ -120,44 +119,8 @@ object Code2StringXmlCore {
         //新生成的key集合
         val newKey = LinkedHashSet<String>()
 
-        FileUtilsWrapper.scanDirListByLine(scanPathList, object : LinePretreatment {
-            override fun line2NewLine(
-                file: File, fileContent: String, line: String, lineIndex: Int, lineSize: Int
-            ): String {
-                val parsePair = filePretreatment.parse(file)
-                val first = parsePair?.first ?: return line
-                val second = parsePair.second
-                val placeHolderFilter = parsePair.third ?: return line
-
-                val importAction = importClass.importAction(file, fileContent, line, lineIndex)
-                if (importAction != null) {
-                    return importAction
-                }
-
-                val placeholder = "~~~~~~~~~"
-                val special = "%"
-                val line2FormatLine = RegexUtilsWrapper.line2FormatLine(line.replace(special, placeholder),
-                    first,
-                    formatLineConvert = object : FormatLineConvert {
-                        override fun formatLine2NewLine(
-                            formatLine: String, placeholderList: List<String>?
-                        ): String {
-                            if (placeholderList.isNullOrEmpty()) return formatLine
-                            val valueList = placeholderList.map {
-                                val pureWord = placeHolderFilter.placeholder2RealWords(it)
-                                val generateNewKey = value2StringKeyAuto(file, pureWord, oldKey2NewKeyMap)
-                                val key = generateNewKey.second
-                                if (generateNewKey.first) {
-                                    newKey.add(key)
-                                }
-                                second?.format(key) ?: ""
-                            }.toTypedArray()
-                            return formatLine.format(*valueList)
-                        }
-                    })
-                return line2FormatLine.replace(placeholder, special)
-            }
-        }, fileFilter = object : FileFilter {
+        //扫描出所有符合条件的文件
+        val fileList = FileUtilsWrapper.scanDirList(scanPathList, object : FileFilter {
             override fun filter(file: File): Boolean {
                 val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                 val second = splitFileByDot.second
@@ -168,22 +131,63 @@ object Code2StringXmlCore {
                 //return second != null && (second == "xml")
                 //return true
             }
-        }, scanFinishConsumer = object : Consumer<Boolean> {
-            override fun accept(t: Boolean) {
-                println("====================解析结束===========================")
-                println(newKey.map { it + "===>" + oldKey2NewKeyMap[it] })
-
-                //开始写入xml
-                val pairList2StringXml = XmlCore.pairList2StringXml(oldKey2NewKeyMap.toList())
-                println(pairList2StringXml)
-
-                println("------")
-
-                val stringXmlPath = FileUtilsWrapper.getFileByCreate(newOutputStringXmlPath)
-                stringXmlPath.writeText(pairList2StringXml)
-                println("操作完成：" + stringXmlPath)
-            }
         })
+
+        fileList.forEach { file ->
+            //文件预处理
+            val fileParseTriple = filePretreatment.parse(file)
+
+            FileUtilsWrapper.replaceFileByLine(file, object : LinePretreatment {
+                override fun line2NewLine(
+                    file: File, fileContent: String, line: String, lineIndex: Int, lineSize: Int
+                ): String {
+                    val first = fileParseTriple?.first ?: return line
+                    val second = fileParseTriple.second
+                    val placeHolderFilter = fileParseTriple.third ?: return line
+
+                    val importAction = importClass.importAction(file, fileContent, line, lineIndex)
+                    if (importAction != null) {
+                        return importAction
+                    }
+
+                    val placeholder = "~~~~~~~~~"
+                    val special = "%"
+                    val line2FormatLine = RegexUtilsWrapper.line2FormatLine(line.replace(special, placeholder),
+                        first,
+                        formatLineConvert = object : FormatLineConvert {
+                            override fun formatLine2NewLine(
+                                formatLine: String, placeholderList: List<String>?
+                            ): String {
+                                if (placeholderList.isNullOrEmpty()) return formatLine
+                                val valueList = placeholderList.map {
+                                    val pureWord = placeHolderFilter.placeholder2RealWords(it)
+                                    val generateNewKey = value2StringKeyAuto(file, pureWord, oldKey2NewKeyMap)
+                                    val key = generateNewKey.second
+                                    if (generateNewKey.first) {
+                                        newKey.add(key)
+                                    }
+                                    second?.format(key) ?: ""
+                                }.toTypedArray()
+                                return formatLine.format(*valueList)
+                            }
+                        })
+                    return line2FormatLine.replace(placeholder, special)
+                }
+            })
+        }
+
+        println("====================解析结束===========================")
+        println(newKey.map { it + "===>" + oldKey2NewKeyMap[it] })
+
+        //开始写入xml
+        val pairList2StringXml = XmlCore.pairList2StringXml(oldKey2NewKeyMap.toList())
+        println(pairList2StringXml)
+
+        println("------")
+
+        val stringXmlPath = FileUtilsWrapper.getFileByCreate(newOutputStringXmlPath)
+        stringXmlPath.writeText(pairList2StringXml)
+        println("操作完成：" + stringXmlPath)
     }
 
     fun value2StringKeyAuto(file: File, value: String, map: MutableMap<String, String>): Pair<Boolean, String> {
