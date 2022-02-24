@@ -13,7 +13,7 @@ object XmlCore {
 
     fun lbkExcel2StringXmlDebug() {
         val path =
-            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Excel2Xml/" + FileUtilsWrapper.defaultFileSuffixName()
+            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Excel2Xml/" + FileUtilsWrapper.defaultTimeName()
         lbkExcel2StringXml(path)
     }
 
@@ -48,17 +48,12 @@ object XmlCore {
 
     }
 
-
-    /**
-     * 把指定语言xml提取为map、排好序的key列表
-     */
-    fun stringsXml2CacheKV(stringsXmlPath: String): Pair<Map<String, String>, List<String>> {
+    fun stringsXml2SortedMap(stringsXmlPath: String): Map<String, String> {
         val file = File(stringsXmlPath)
         if (!file.exists()) {
             throw IllegalAccessException("stringsXml2Map文件不存在:" + stringsXmlPath)
         }
-        val map = LinkedHashMap<String, String>()
-        val sortKeyList = ArrayList<String>()
+        val sortedMap = LinkedHashMap<String, String>()
         val readText = file.readText()
         val matches = RegexUtilsWrapper.lines2StringXmlLineList(readText)
         matches.forEachIndexed { index, s ->
@@ -66,18 +61,13 @@ object XmlCore {
             val k = RegexUtilsWrapper.line2StringXmlLineKey(s)
             val v = RegexUtilsWrapper.line2StringXmlLineValue(s)
             //LogUtils.loggerWrapper(this).debug(k + "==>" + v)
-            sortKeyList.add(k)
-            map[k] = v
+            sortedMap[k] = v
         }
-        return Pair(map, sortKeyList)
-    }
-
-    fun stringsXml2SortMap(stringsXmlPath: String): Map<String, String> {
-        return stringsXml2CacheKV(stringsXmlPath).first
+        return sortedMap
     }
 
     fun stringsXml2SortKeyList(stringsXmlPath: String): List<String> {
-        return stringsXml2CacheKV(stringsXmlPath).second
+        return stringsXml2SortedMap(stringsXmlPath).keys.toList()
     }
 
     fun sortMap2StringXml(map: Map<String, String>): String {

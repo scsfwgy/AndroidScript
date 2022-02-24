@@ -160,7 +160,7 @@ object KeyConvertCore {
                 val filePath = FileConfig.getFullDefaultValuesPath(module.key, l.key)
                 val file = File(filePath)
                 //转换过程已经去重
-                val stringsXml2Map = XmlCore.stringsXml2SortMap(filePath)
+                val stringsXml2Map = XmlCore.stringsXml2SortedMap(filePath)
                 val list = ArrayList<Pair<String, String>>()
                 stringsXml2Map.forEach {
                     val key = it.key
@@ -192,7 +192,7 @@ object KeyConvertCore {
                         languageTriple.first
                     )
                 }
-            val mapList = stringsXmlPathList.map { XmlCore.stringsXml2SortMap(it) }
+            val mapList = stringsXmlPathList.map { XmlCore.stringsXml2SortedMap(it) }
             val map = LinkedHashMap<String, String>()
             mapList.forEach { kv ->
                 map.putAll(kv)
@@ -220,9 +220,9 @@ object KeyConvertCore {
         val stringXml =
             File("/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main/res/values/strings.xml")
         val findKeySet = HashSet<String>()
-        val stringsXml2SortMap =
-            XmlCore.stringsXml2SortMap(stringXml.path)
-//        stringsXml2SortMap.forEach {
+        val stringsXml2SortedMap =
+            XmlCore.stringsXml2SortedMap(stringXml.path)
+//        stringsXml2SortedMap.forEach {
 //            println(it.key + "-->" + it.value)
 //        }
         FileUtilsWrapper.scanDirListByLine(listOf(
@@ -235,7 +235,7 @@ object KeyConvertCore {
         ), object : LinePretreatment {
             fun findKeyFun(keyList: List<String>) {
                 keyList.forEach {
-                    val s = stringsXml2SortMap[it]
+                    val s = stringsXml2SortedMap[it]
                     if (s != null) {
                         findKeySet.add(it)
                     }
@@ -273,13 +273,13 @@ object KeyConvertCore {
         }, object : Consumer<Boolean> {
             override fun accept(t: Boolean) {
                 println("====处理完毕===")
-                val unFindKeySet = stringsXml2SortMap.keys.toMutableSet()
+                val unFindKeySet = stringsXml2SortedMap.keys.toMutableSet()
                 unFindKeySet.removeAll(findKeySet)
                 println("未使用列表：" + findKeySet)
                 println("使用列表：" + unFindKeySet)
 
 //                println("====开始回写=====")
-//                val stringMap = stringsXml2SortMap.filter { findKeySet.contains(it.key) }
+//                val stringMap = stringsXml2SortedMap.filter { findKeySet.contains(it.key) }
 //                val sortMap2StringXml = XmlCore.sortMap2StringXml(stringMap)
 //                stringXml.writeText(sortMap2StringXml)
 //                println("====回写结束=====")
@@ -299,7 +299,7 @@ object KeyConvertCore {
             )
             val second = languageTriple.second
             val suffix = second.substring(second.length - 2)
-            val map = XmlCore.stringsXml2SortMap(stringsXmlPath)
+            val map = XmlCore.stringsXml2SortedMap(stringsXmlPath)
             val newMap = LinkedHashMap<String, String>()
             map.forEach {
                 newMap[it.key] = it.value + "_" + suffix

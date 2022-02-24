@@ -24,7 +24,7 @@ object ExcelCore {
             val second = languageTriple.second
             val suffix = second.substring(second.length - 2)
             val realSuffix = "_" + suffix
-            val map = XmlCore.stringsXml2SortMap(stringsXmlPath)
+            val map = XmlCore.stringsXml2SortedMap(stringsXmlPath)
             val newMap = LinkedHashMap<String, String>()
             map.forEach {
                 newMap[it.key] = it.value.replace(realSuffix, "")
@@ -60,7 +60,7 @@ object ExcelCore {
         }
         LogWrapper.loggerWrapper(KeyConvertCore::class.java)
             .debug("==>" + realList.size + "," + realList.firstOrNull()?.size)
-        val excelFileName = "Android多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultFileSuffixName() + ".xlsx"
+        val excelFileName = "Android多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultTimeName() + ".xlsx"
         ExcelUtils.baseXml2Excel(
             FileUtilsWrapper.getFileByCreate("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/" + excelFileName),
             realList,

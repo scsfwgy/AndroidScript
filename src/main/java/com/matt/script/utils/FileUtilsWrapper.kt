@@ -192,7 +192,7 @@ object FileUtilsWrapper {
         return File(path)
     }
 
-    fun defaultFileSuffixName(): String {
+    fun defaultTimeName(): String {
         return TimeUtils.millis2String(System.currentTimeMillis(), TimeUtils.getSafeDateFormat("yyyy-MM-dd_HH-mm-ss"))
     }
 }
