@@ -106,7 +106,7 @@ object Code2StringXmlCore {
                 }
             },
             linePretreatmentHook = object : LinePretreatmentHook {
-                override fun line2NewLineHook(line: String): Pair<Boolean, String> {
+                override fun line2NewLineHook(file: File, line: String): Pair<Boolean, String> {
                     fun hook(list: List<String>): Boolean {
                         list.forEach {
                             if (line.contains(it)) {
@@ -166,7 +166,7 @@ object Code2StringXmlCore {
                 override fun line2NewLine(
                     file: File, fileContent: String, line: String, lineIndex: Int, lineSize: Int
                 ): String {
-                    val lineHookPair = linePretreatmentHook.line2NewLineHook(line)
+                    val lineHookPair = linePretreatmentHook.line2NewLineHook(file, line)
                     val newLine = lineHookPair.second
                     if (lineHookPair.first) {
                         return newLine

@@ -39,8 +39,8 @@ object ExcelCore {
         val realList = ArrayList<List<String?>>()
 
         val headList = ArrayList<String?>()
-        headList.add("defaultKey")
         headList.add("key")
+        headList.add("defaultKey")
         headList.add("newkey")
         FileConfig.languageDirNameList.forEach {
             headList.add(it.second)
@@ -50,8 +50,8 @@ object ExcelCore {
         keyList.forEach { key ->
             val isNewKey = key.startsWith("L0")
             val itemList = ArrayList<String?>()
-            itemList.add(if (isNewKey) null else key)
             itemList.add(if (isNewKey) key.filterIndexed { index, _ -> index < 8 } else null)
+            itemList.add(if (isNewKey) null else key)
             itemList.add(if (isNewKey) key else null)
             stringListMap.forEach {
                 itemList.add(it[key])
