@@ -2,7 +2,7 @@ package com.matt.script.core.interfaces
 
 import java.io.File
 
-interface FileLineParse {
+interface FilePretreatment {
     /**
      * 解析文件配置，核心看这里注释。
      * Triple:

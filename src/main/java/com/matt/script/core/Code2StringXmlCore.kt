@@ -32,7 +32,7 @@ object Code2StringXmlCore {
 
 
     fun androidDemo(scanDirList: List<String>, sortMap: Map<String, String>, generateStringXmlPath: String) {
-        code2StringXmlCore(scanDirList, sortMap, generateStringXmlPath, fileLineParse = object : FileLineParse {
+        code2StringXmlCore(scanDirList, sortMap, generateStringXmlPath, filePretreatment = object : FilePretreatment {
             override fun parse(file: File): Triple<String?, String?, PlaceHolderFilter?>? {
                 val fileByDot = FileUtilsWrapper.splitFileByDot(file)
                 return when (fileByDot.second) {
@@ -102,16 +102,20 @@ object Code2StringXmlCore {
     }
 
     /**
-     * 入口
+     * @param scanPathList 待扫描处理的文件夹，越精确越好
+     * @param defaultStringXml2SortMap 默认语言文件strings.xml转化为原有文案顺序的Map。注意：我们认为默认默认strings.xml文案是最全的。
+     * @param newOutputStringXmlPath 处理完的strings.xml，您希望输出到哪？测试完毕后，建议直接输出到项目默认strings.xml所在的文件夹，直接覆盖。
+     * @param filePretreatment 文件预处理
+     * @param importClass 导包处理，上层调用者处理
      */
     fun code2StringXmlCore(
         scanPathList: List<String>,
-        sortedLanguageMap: Map<String, String>,
-        outputStringXmlPath: String,
-        fileLineParse: FileLineParse,
+        defaultStringXml2SortMap: Map<String, String>,
+        newOutputStringXmlPath: String,
+        filePretreatment: FilePretreatment,
         importClass: ImportClass,
     ) {
-        val oldKey2NewKeyMap = sortedLanguageMap.toMutableMap()
+        val oldKey2NewKeyMap = defaultStringXml2SortMap.toMutableMap()
 
         //新生成的key集合
         val newKey = LinkedHashSet<String>()
@@ -120,7 +124,7 @@ object Code2StringXmlCore {
             override fun line2NewLine(
                 file: File, fileContent: String, line: String, lineIndex: Int, lineSize: Int
             ): String {
-                val parsePair = fileLineParse.parse(file)
+                val parsePair = filePretreatment.parse(file)
                 val first = parsePair?.first ?: return line
                 val second = parsePair.second
                 val placeHolderFilter = parsePair.third ?: return line
@@ -175,7 +179,7 @@ object Code2StringXmlCore {
 
                 println("------")
 
-                val stringXmlPath = FileUtilsWrapper.getFileByCreate(outputStringXmlPath)
+                val stringXmlPath = FileUtilsWrapper.getFileByCreate(newOutputStringXmlPath)
                 stringXmlPath.writeText(pairList2StringXml)
                 println("操作完成：" + stringXmlPath)
             }
