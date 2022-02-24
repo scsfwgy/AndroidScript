@@ -12,9 +12,8 @@ interface FilePretreatment {
      *
      *  @return
      * 举例：
-     * 1. showToast("你好啦啦啦啦xxx啦w333了12")=>first:"你好啦啦啦啦xxx啦w333了12"  second:first:YourContext.getString(R.string.%s)
-     * second:导包：listOf("import com.yzj.mycommonlib.Common.MyContextUtils")
-     * 2. android:text="你好22收到的"=>first:你好22收到的  second:first:@string/%s second:null
+     * 1. showToast("你好啦啦啦啦xxx啦w333了12")=>first:"你好啦啦啦啦xxx啦w333了12"  second:YourContext.getString(R.string.%s)
+     * 2. android:text="你好22收到的"=>first:你好22收到的  second:@string/%s
      */
     fun parse(file: File): Triple<String?, String?, PlaceHolderFilter?>?
 }
