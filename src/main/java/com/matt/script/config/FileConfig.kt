@@ -1,9 +1,6 @@
 package com.matt.script.config
 
 object FileConfig {
-    //当前项目跟地址
-    val currRootPath = "/Users/matt.wang/IdeaProjects/AndroidScript"
-
     val backup = "BackUpFiles"
 
     //要抽取的安卓项目根地址

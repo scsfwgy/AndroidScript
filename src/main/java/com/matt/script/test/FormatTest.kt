@@ -1,7 +1,5 @@
 package com.matt.script.test
 
-import java.text.MessageFormat
-
 fun main() {
     FormatTest.test()
 }

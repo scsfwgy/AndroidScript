@@ -1,6 +1,6 @@
 package com.matt.script.utils
 
-import com.matt.script.core.FormatLineConvert
+import com.matt.script.core.interfaces.FormatLineConvert
 import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
 

@@ -1,8 +1,8 @@
 package com.matt.script.utils
 
-import com.matt.script.core.FileFilter
-import com.matt.script.core.LinePretreatment
-import com.matt.script.log.LogUtils
+import com.matt.script.config.LogWrapper
+import com.matt.script.core.interfaces.FileFilter
+import com.matt.script.core.interfaces.LinePretreatment
 import com.matt.script.utils.blankj.FileUtils
 import com.matt.script.utils.blankj.TimeUtils
 import java.io.File
@@ -123,7 +123,7 @@ object FileUtilsWrapper {
                         filterPrefix == prefixName
                     }
                     filterSuffix != null -> {
-                        LogUtils.loggerWrapper(FileUtilsWrapper.javaClass).debug("$filterSuffix,$suffixName" + false)
+                        LogWrapper.loggerWrapper(FileUtilsWrapper.javaClass).debug("$filterSuffix,$suffixName" + false)
                         filterSuffix == suffixName
                     }
                     else -> {

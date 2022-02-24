@@ -1,7 +1,10 @@
 package com.matt.script.core
 
 import com.matt.script.config.FileConfig
-import com.matt.script.log.LogUtils
+import com.matt.script.config.LogWrapper
+import com.matt.script.core.interfaces.FileFilter
+import com.matt.script.core.interfaces.FormatLineConvert
+import com.matt.script.core.interfaces.LinePretreatment
 import com.matt.script.utils.ExcelUtils
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
@@ -319,7 +322,7 @@ object KeyConvertCore {
         println("===========将Excel到处为项目用的语言配置============")
         val baseExcel2StringXml =
             ExcelUtils.baseExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-02-21_15-24-39.xlsx")
-        LogUtils.loggerWrapper(KeyConvertCore::class.java)
+        LogWrapper.loggerWrapper(KeyConvertCore::class.java)
             .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
     }
 

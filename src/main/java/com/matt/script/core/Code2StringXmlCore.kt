@@ -1,5 +1,6 @@
 package com.matt.script.core
 
+import com.matt.script.core.interfaces.*
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.RegexUtils
@@ -10,6 +11,9 @@ fun main() {
     Code2StringXmlCore.lbkAndroidDemo()
 }
 
+/**
+ * 扫描代码（java、kotlin、xml）中的文案字符串，并抽取到strings.xml中
+ */
 object Code2StringXmlCore {
     var count = 0
 

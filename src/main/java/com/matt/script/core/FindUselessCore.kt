@@ -1,6 +1,8 @@
 package com.matt.script.core
 
-import com.matt.script.log.LogUtils
+import com.matt.script.config.LogWrapper
+import com.matt.script.core.interfaces.FileFilter
+import com.matt.script.core.interfaces.FileFindKey
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.FileUtils
@@ -26,7 +28,7 @@ object FindUselessCore {
             RegexUtilsWrapper.javaOrKtPureStringKeyRegex,
             RegexUtilsWrapper.xmlPureStringKeyRegex
         )
-        LogUtils.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet)
     }
 
 
@@ -55,17 +57,17 @@ object FindUselessCore {
             RegexUtilsWrapper.javaOrKtPureDrawableKeyRegex,
             RegexUtilsWrapper.xmlPureDrawableKeyRegex
         )
-        LogUtils.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet)
         //后续怎么处理，自己定
         val delFileList = originKeyList.filter {
             //不取后缀
             val splitFileByDot = FileUtilsWrapper.getPureName(it)
             uselessSet.contains(splitFileByDot)
         }
-        LogUtils.loggerWrapper(FindUselessCore.javaClass)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass)
             .debug("待删除文件：" + delFileList.size.toString() + "===>>" + delFileList)
         val sum = delFileList.sumOf { it.length() }
-        LogUtils.loggerWrapper(FindUselessCore.javaClass)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass)
             .debug("待删除文件大小（总计）：" + FileUtils.byte2FitMemorySize(sum, 2))
 
         val delDirs = "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/delDrawable"
@@ -77,13 +79,13 @@ object FindUselessCore {
                         )
             )
         }
-        LogUtils.loggerWrapper(FindUselessCore.javaClass)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass)
             .debug("待删除文件已整理到：$delDirs")
 
         delFileList.forEach {
             it.deleteOnExit()
         }
-        LogUtils.loggerWrapper(FindUselessCore.javaClass)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass)
             .debug("无用文件已删除：${delFileList.size}")
     }
 
@@ -116,7 +118,7 @@ object FindUselessCore {
                 return second == "java" || second == "kt" || second == "xml" || second == "m"
             }
         })
-        LogUtils.loggerWrapper(FindUselessCore.javaClass)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass)
             .debug("未使用列表：" + uselessSet.size.toString() + "===>>" + uselessSet)
         return uselessSet
     }
@@ -135,10 +137,10 @@ object FindUselessCore {
                 findUsageKey(findKeySet, usageKeySet, allExistSet)
             }
         }
-        LogUtils.loggerWrapper(FindUselessCore.javaClass).debug("使用列表：" + usageKeySet.size)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("使用列表：" + usageKeySet.size)
         val uselessSet = allExistSet.toMutableSet()
         uselessSet.removeAll(usageKeySet)
-        LogUtils.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet.size)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet.size)
 
         //可以删除未使用列表
         return uselessSet

@@ -1,4 +1,4 @@
-package com.matt.script.core
+package com.matt.script.core.interfaces
 
 import java.io.File
 

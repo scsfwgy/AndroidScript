@@ -1,4 +1,4 @@
-package com.matt.script.log
+package com.matt.script.config
 
 import org.apache.log4j.Logger
 
@@ -9,8 +9,16 @@ import org.apache.log4j.Logger
  * 描 述 ：
  * ============================================================
  **/
-object LogUtils {
+object LogWrapper {
+    fun loggerWrapper(any: Any): Logger {
+        return loggerWrapper(any.javaClass)
+    }
+
     fun loggerWrapper(clazz: Class<*>): Logger {
-        return Logger.getLogger(clazz)
+        return loggerWrapper(clazz.simpleName)
+    }
+
+    fun loggerWrapper(tag: String): Logger {
+        return Logger.getLogger(tag)
     }
 }
