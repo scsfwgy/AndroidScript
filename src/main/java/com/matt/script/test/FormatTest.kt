@@ -44,10 +44,13 @@ object FormatTest {
 //        val msg11 = "第一个参数：参数{1}，第二个参数：参数{1"
 //        println(MessageFormat.format(msg11, null))
 
-        println(String.format("%.2f", 1.00000))
-        val data = 1 + (100 / 1000)
-        println(StringWrapper.format("{0}s后重新发送", data))
-        println(StringWrapper.format("{0}s后重新发送", "2"))
-        println(StringWrapper.format("{0}s后重新发送", 2.3f))
+//        println(String.format("%.2f", 1.00000))
+//        val data = 1 + (100 / 1000)
+//        println(StringWrapper.format("{0}s后重新发送", data))
+//        println(StringWrapper.format("{0}s后重新发送", "2"))
+//        println(StringWrapper.format("{0}s后重新发送", 2.3f))
+
+        val list= listOf("base","sss.base.ssssdd")
+        println(list.filter { it.contains("base") })
     }
 }

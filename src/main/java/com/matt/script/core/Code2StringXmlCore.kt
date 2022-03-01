@@ -19,17 +19,15 @@ object Code2StringXmlCore {
 
     fun lbkAndroidDemo() {
         val defaultTimeName = FileUtilsWrapper.defaultTimeName()
-        val basePath = "/Users/matt.wang/AndroidStudioProjects/MotorHome"
+        val basePath = "/Users/matt.wang/AsProject/Android-LBK"
         androidDemo(
             listOf(
                 "${basePath}/app/src/main",
-                "${basePath}/motor_wrapper/src/main",
-                "${basePath}/pack_wrapper/src/main",
-                //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp3"
-            ),
-            XmlCore.stringsXml2SortedMap("${basePath}/pack_wrapper/src/main/res/values/strings.xml"),
+                "${basePath}/lib_wrapper/src/main",
+                "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp"
+            ), XmlCore.stringsXml2SortedMap("${basePath}/lib_wrapper/src/main/res/values/strings.xml"),
             //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/values/${defaultTimeName}/strings.xml"
-            "${basePath}/pack_wrapper/src/main/res/values/strings.xml"
+            "${basePath}/lib_wrapper/src/main/res/values/strings.xml"
         )
     }
 
@@ -37,91 +35,144 @@ object Code2StringXmlCore {
     fun androidDemo(scanDirList: List<String>, sortMap: Map<String, String>, generateStringXmlPath: String) {
         LogWrapper.loggerWrapper(this).debug("处理文件：" + scanDirList + "," + sortMap.size + "," + generateStringXmlPath)
         LogWrapper.loggerWrapper(this).debug("开始扫描对应文件夹")
-        code2StringXmlCore(scanDirList, sortMap, generateStringXmlPath,
-            filePretreatment = object : FilePretreatment {
-                override fun parse(file: File): Triple<String?, String?, PlaceHolderFilter?>? {
-                    val fileByDot = FileUtilsWrapper.splitFileByDot(file)
-                    return when (fileByDot.second) {
-                        "java", "kt" -> {
-                            return Triple(RegexUtilsWrapper.containsZhRegex,
-                                """MyContextUtils.getString(R.string.%s)""".trimIndent(),
-                                object : PlaceHolderFilter {
-                                    override fun placeholder2RealWords(placeholder: String): String {
-                                        return placeholder.replace(
-                                            """
+        code2StringXmlCore(scanDirList, sortMap, generateStringXmlPath, filePretreatment = object : FilePretreatment {
+            override fun parse(file: File): Triple<String?, String?, PlaceHolderFilter?>? {
+                val fileByDot = FileUtilsWrapper.splitFileByDot(file)
+                return when (fileByDot.second) {
+                    "java", "kt" -> {
+                        return Triple(RegexUtilsWrapper.containsZhRegex,
+                            """MyContextUtils.getString(R.string.%s)""".trimIndent(),
+                            object : PlaceHolderFilter {
+                                override fun placeholder2RealWords(placeholder: String): String {
+                                    return placeholder.replace(
+                                        """
                                             "
                                         """.trimIndent(), ""
-                                        )
-                                    }
-
-                                })
-                        }
-                        "xml" -> {
-                            return Triple(RegexUtilsWrapper.xmlContainerZhContentRegex,
-                                """@string/%s""".trimIndent(),
-                                object : PlaceHolderFilter {
-                                    override fun placeholder2RealWords(placeholder: String): String {
-                                        return placeholder
-                                    }
-
-                                })
-                        }
-                        else -> {
-                            null
-                        }
-                    }
-                }
-
-            }, importClass = object : ImportClass {
-                override fun importAction(file: File, fileContent: String, line: String, lineIndex: Int): String? {
-                    val fileByDot = FileUtilsWrapper.splitFileByDot(file)
-                    return when (fileByDot.second) {
-                        "java", "kt" -> {
-                            //判定是否需要导包
-                            if (lineIndex == 1) {
-                                if (RegexUtils.getMatches(RegexUtilsWrapper.containsZhRegex, fileContent).size > 0) {
-                                    val rClass = "import com.pack.pack_wrapper.R"
-                                    val stringRClass = "import com.pack.pack_wrapper.MyContextUtils"
-                                    val end = if (fileByDot.second == "java") ";" else ""
-                                    var newLine = line
-                                    //如果没有R文件，则导入默认R文件
-                                    if (RegexUtils.getMatches(
-                                            RegexUtilsWrapper.javaOrKtContainerR, fileContent
-                                        ).size == 0
-                                    ) {
-                                        newLine += "\n" + (rClass + end)
-                                    }
-                                    if (!fileContent.contains(stringRClass)) {
-                                        newLine += "\n" + (stringRClass + end)
-                                    }
-                                    return newLine
+                                    )
                                 }
-                            }
-                            return null
-                        }
-                        else -> {
-                            null
-                        }
+
+                            })
+                    }
+                    "xml" -> {
+                        return Triple(RegexUtilsWrapper.xmlContainerZhContentRegex,
+                            """@string/%s""".trimIndent(),
+                            object : PlaceHolderFilter {
+                                override fun placeholder2RealWords(placeholder: String): String {
+                                    return placeholder
+                                }
+
+                            })
+                    }
+                    else -> {
+                        null
                     }
                 }
-            },
-            linePretreatmentHook = object : LinePretreatmentHook {
-                override fun line2NewLineHook(file: File, line: String): Pair<Boolean, String> {
-                    fun hook(list: List<String>): Boolean {
-                        list.forEach {
-                            if (line.contains(it)) {
-                                return true
+            }
+
+        }, importClass = object : ImportClass {
+            override fun importAction(file: File): Boolean {
+                val fileByDot = FileUtilsWrapper.splitFileByDot(file)
+                val ext = fileByDot.second
+                return when (ext) {
+                    "java", "kt" -> {
+                        val fileContent = file.readText()
+                        //判定是否需要导包
+                        if (RegexUtils.getMatches(RegexUtilsWrapper.javaOrKtPureStringKeyRegex, fileContent).size > 0) {
+                            val rClass = "import com.lbk.lib_wrapper.R"
+                            val stringRClass = "import com.lbk.lib_wrapper.utils.MyContextUtils"
+                            val appendList = ArrayList<String>()
+                            if (RegexUtils.getMatches(
+                                    RegexUtilsWrapper.javaOrKtContainerR, fileContent
+                                ).size == 0
+                            ) {
+                                appendList.add(rClass)
+                            } else if (!fileContent.contains("MyContextUtils") && !fileContent.contains("ResourcesUtils")) {
+                                appendList.add(stringRClass)
                             }
+                            val newAppend = appendList.joinToString(separator = "\n")
+                            val newContent = file.readLines().mapIndexed { index, s ->
+                                if (index == 1 && newAppend.isNotEmpty()) {
+                                    s + "\n" + newAppend + (if (ext == "java") ";" else "") + "\n"
+                                } else {
+                                    s
+                                }
+                            }.joinToString(separator = "\n")
+                            val compatibilityFile = FileUtilsWrapper.compatibilityFile(file.readText(), newContent)
+                            if (!compatibilityFile) {
+                                file.writeText(newContent)
+                            }
+                            return true
                         }
                         return false
                     }
-
-                    val hook = hook(listOf("const val", "@Deprecated(", "@SerializedName("))
-                    return Pair(hook, line)
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, linePretreatmentHook = object : LinePretreatmentHook {
+            override fun line2NewLineHook(file: File, line: String): Pair<Boolean, String> {
+                fun hook(list: List<String>): Boolean {
+                    list.forEach {
+                        if (line.contains(it)) {
+                            return true
+                        }
+                    }
+                    return false
                 }
 
+                //原有过滤逻辑
+                val list = listOf(
+                    //app
+                    "HelpActivity",
+                    "MyAvgResponseTimeMonitor",
+                    "Common/Debug",
+                    "modules/Demo",
+                    "IDCardUtils",
+                    "MyLanguageManager",
+                    "MyLanguageUtils",
+                    "MyCrashHandler",
+                    "SampleApplicationLike",
+                    "MyDebugView",
+                    "hit_new_helper_activity_layout",
+                    "FutureManager",
+                    "UserInfoUtils",
+                    "LocalWalletWithdraw",
+                    "AppWalletServiceV2",
+                    //wrapper
+                    "widget",
+                    "base",
+                    "utils",
+                    "exception",
+                    "config",
+                    "cache",
+                )
+                val name = file.path
+                if (list.any { name.contains(it) }) {
+                    LogWrapper.loggerWrapper(this).debug("过滤该文件：" + file.path)
+                    return Pair(true, line)
+                }
+
+                val hook = hook(
+                    listOf(
+                        "const val",
+                        "@Deprecated(",
+                        "@SerializedName(",
+                        "Log.",
+                        "/*",
+                        "//",
+                        "*/"
+                    )
+                ) ||
+                        //注释行
+                        line.trim().startsWith("*")
+                if (hook) {
+                    LogWrapper.loggerWrapper(this).debug("过滤该文件：" + file.path)
+                }
+                return Pair(hook, line)
             }
-        )
+
+        })
     }
 
     /**
@@ -144,8 +195,7 @@ object Code2StringXmlCore {
         //新生成的key集合
         val newKey = LinkedHashSet<String>()
 
-        //扫描出所有符合条件的文件
-        val fileList = FileUtilsWrapper.scanDirList(scanPathList, object : FileFilter {
+        val filter = object : FileFilter {
             override fun filter(file: File): Boolean {
                 val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                 val second = splitFileByDot.second
@@ -156,7 +206,10 @@ object Code2StringXmlCore {
                 //return second != null && (second == "xml")
                 //return true
             }
-        })
+        }
+
+        //扫描出所有符合条件的文件
+        val fileList = FileUtilsWrapper.scanDirList(scanPathList, filter)
 
         fileList.forEach { file ->
             //文件预处理
@@ -175,14 +228,10 @@ object Code2StringXmlCore {
                     val second = fileParseTriple.second
                     val placeHolderFilter = fileParseTriple.third ?: return newLine
 
-                    val importAction = importClass.importAction(file, fileContent, newLine, lineIndex)
-                    if (importAction != null) {
-                        return importAction
-                    }
-
                     val placeholder = "~~~~~~~~~"
                     val special = "%"
-                    val line2FormatLine = RegexUtilsWrapper.line2FormatLine(newLine.replace(special, placeholder),
+                    val line2FormatLine = RegexUtilsWrapper.line2FormatLine(
+                        newLine.replace(special, placeholder),
                         first,
                         formatLineConvert = object : FormatLineConvert {
                             override fun formatLine2NewLine(
@@ -205,6 +254,15 @@ object Code2StringXmlCore {
                 }
             })
         }
+        LogWrapper.loggerWrapper(this).debug("====================开始全局处理新文件导包逻辑===========================")
+        val newScanDirList = FileUtilsWrapper.scanDirList(scanPathList, filter)
+        newScanDirList.forEach {
+            val importAction = importClass.importAction(it)
+            if (importAction) {
+                LogWrapper.loggerWrapper(this).debug("该文件被处理导包逻辑：" + it.path)
+            }
+        }
+
 
         LogWrapper.loggerWrapper(this).debug("====================解析结束===========================")
         LogWrapper.loggerWrapper(this).debug("新扫描生成的key:" + newKey.map { it + "===>" + oldKey2NewKeyMap[it] })
@@ -217,7 +275,7 @@ object Code2StringXmlCore {
 
         val stringXmlPath = FileUtilsWrapper.getFileByCreate(newOutputStringXmlPath)
         stringXmlPath.writeText(pairList2StringXml)
-        LogWrapper.loggerWrapper(this).debug("操作完成：" + stringXmlPath)
+        //LogWrapper.loggerWrapper(this).debug("操作完成：" + stringXmlPath)
     }
 
     fun value2StringKeyAuto(file: File, value: String, map: MutableMap<String, String>): Pair<Boolean, String> {

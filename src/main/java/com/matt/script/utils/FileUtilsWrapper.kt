@@ -59,21 +59,45 @@ object FileUtilsWrapper {
         //清空
         tempFile.writeText("")
         val content = file.readText()
-        val readLines = file.readLines()
-        readLines.forEachIndexed { index, line1 ->
-            val newLine = linePretreatment.line2NewLine(file, content, line1, index, readLines.size)
+        val beforeReadLines = file.readLines()
+        beforeReadLines.forEachIndexed { index, line1 ->
+            val newLine = linePretreatment.line2NewLine(file, content, line1, index, beforeReadLines.size)
             //println(newLine)
             tempFile.appendText(newLine)
             //写入默认,最后一行就不要写入换行符
-            if (index != readLines.size - 1) {
+            if (index != beforeReadLines.size - 1) {
                 tempFile.appendText("\n")
             }
         }
 
+        replaceFile(file, tempFile)
+    }
+
+    fun compatibilityFile(oldContent: String, newContent: String): Boolean {
+        return oldContent.trim() == newContent.trim()
+    }
+
+    fun replaceFile(oldFile: File, newFile: File) {
+        //兼容逻辑:部分file操作完，只多（少）了一个空行："",这个时候就不替换了。暂时不知道原因。
+//        val beforeReadLines = oldFile.readLines()
+//        val tempReadLines = newFile.readLines()
+//
+//        val compatibility = tempReadLines == beforeReadLines
+//                ||
+//                (abs(tempReadLines.size - beforeReadLines.size) == 1 && (tempReadLines.last()
+//                    .isEmpty() || beforeReadLines.last().isEmpty()))
+        val compatibility = compatibilityFile(oldFile.readText(), newFile.readText())
+        if (compatibility) {
+            //if (tempReadLines.last() == "\n" || beforeReadLines.last() == "\n") {
+            LogWrapper.loggerWrapper(this).debug("兼容逻辑:部分file操作完，只多（少）了一个空行,这个时候就不替换了。暂时不知道原因。不再替换的文件：" + oldFile.path)
+            FileUtils.delete(newFile)
+            return
+            //}
+        }
         //覆盖老文件
-        val name = file.name
-        FileUtils.delete(file)
-        FileUtils.rename(tempFile, name)
+        val name = oldFile.name
+        FileUtils.delete(oldFile)
+        FileUtils.rename(newFile, name)
     }
 
     fun listFileByPathList(
