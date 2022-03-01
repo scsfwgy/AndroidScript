@@ -24,7 +24,7 @@ object XmlCore {
         LogWrapper.loggerWrapper(XmlCore.javaClass)
             .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
         val baseExcel2StringXml =
-            ExcelUtils.baseExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-02-21_16-14-08.xlsx")
+            ExcelUtils.baseExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-03-01_15-26-04.xlsx")
         LogWrapper.loggerWrapper(KeyConvertCore::class.java)
             .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
 
@@ -34,7 +34,7 @@ object XmlCore {
             val fullPath = "$dir/$fileName"
             val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
             val pairList = baseExcel2StringXml.filterIndexed { index2, _ -> index2 > 0 }.map { itemList ->
-                val defaultKey = itemList[0]
+                val defaultKey = itemList[1]
                 //val key = itemList[1]
                 val newKey = itemList[2]
                 val realKey = if (newKey.isNullOrEmpty()) defaultKey ?: "no key" else newKey
