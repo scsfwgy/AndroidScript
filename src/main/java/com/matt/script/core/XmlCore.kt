@@ -39,7 +39,13 @@ object XmlCore {
                 val newKey = itemList[2]
                 val realKey = if (newKey.isNullOrEmpty()) defaultKey ?: "no key" else newKey
                 val value = itemList[index + 3]
-                Pair(realKey, value)
+                //取不到就取英文
+                val finalValue = if (!value.isNullOrEmpty()) {
+                    value
+                } else {
+                    itemList[4]
+                }
+                Pair(realKey, finalValue)
             }
             val pairList2StringXml = pairList2StringXml(pairList)
             fullPatFile.writeText(pairList2StringXml)

@@ -19,8 +19,8 @@ object AndroidScript {
      */
     fun excel2StringsXml() {
         //测试
-        XmlCore.lbkExcel2StringXmlDebug()
+        //XmlCore.lbkExcel2StringXmlDebug()
         //正式
-        //XmlCore.lbkExcel2StringXml("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res")
+        XmlCore.lbkExcel2StringXml("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res")
     }
 }
