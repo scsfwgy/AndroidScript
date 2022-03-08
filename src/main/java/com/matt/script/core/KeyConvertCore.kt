@@ -49,18 +49,94 @@ object KeyConvertCore {
         }
     }
 
-    fun scanCore() {
-        val excel2Map =
-            ExcelCore.excel2Map(File("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/keyTOkey_auto.xls"), 0, 1)
-        val oldKey2NewKeyMap = HashMap<String, String>()
-        excel2Map.forEach {
-            oldKey2NewKeyMap[it.key] = it.value[1]
+    fun getOldKey2NewKeyMap(): Map<String, String> {
+        val listList = ExcelUtils.baseExcel2StringXml(
+            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-03-08_13-40-32---2.xlsx",
+            beginRow = 1
+        )
+        val map = HashMap<String, String>()
+        listList.forEach {
+            val key = it.getOrNull(1)
+            val value = it.getOrNull(2)
+            val skip = key.isNullOrEmpty() || value.isNullOrEmpty()
+            if (!skip) {
+                map[key ?: ""] = value ?: ""
+            }
         }
+        return map
+    }
+
+    /**
+     * 新版本旧key替换，更加简单粗暴
+     */
+    fun oldKey2NewKey() {
+        val debug = false
+        val oldKey2NewKeyMap = getOldKey2NewKeyMap()
+        val list = if (debug) {
+            listOf("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp")
+        } else {
+            listOf(
+                "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
+                "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main"
+            )
+        }
+        val fileList = FileUtilsWrapper.scanDirList(list, fileFilter = object : FileFilter {
+            override fun filter(file: File): Boolean {
+                val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
+                val second = splitFileByDot.second
+                //只替换这些文件
+                //return second != null && (second == "java" || second == "kt")
+                //return second != null && (second == "m")
+                //return second != null && (second == "xml")
+                //return second != null && file.name.equals("strings.xml")
+                return second == "java" || second == "kt" || second == "xml" || second == "m"
+            }
+        })
+        fileList.forEach { file ->
+            val lineRegex = fileLineRegex(file)
+            val readTextStr = file.readText()
+            val keyList = RegexUtils.getMatches(lineRegex, readTextStr)
+            if (keyList.isEmpty()) {
+                LogWrapper.loggerWrapper(this).debug("该文件没有任何变化：" + file.path)
+            } else {
+                val placeholder = "~~~~~~~~~"
+                val special = "%"
+                val tempContent = readTextStr.replace(special, placeholder)
+                val newFormatTxt = RegexUtils.getReplaceAll(tempContent, lineRegex, "%s")
+                if (debug) {
+                    LogWrapper.loggerWrapper(this).debug("格式化后文案：" + newFormatTxt)
+                }
+                val newKeyList = keyList.map {
+                    val newKey = oldKey2NewKeyMap[it]
+                    if (newKey != null) {
+                        LogWrapper.loggerWrapper(this).debug("替换新key：" + it + "===>>>" + newKey + "," + file.path)
+                    }
+                    newKey ?: it
+                }
+                val newContentTxt = try {
+                    newFormatTxt.format(*newKeyList.toTypedArray())
+                } catch (e: Exception) {
+                    LogWrapper.loggerWrapper(this).debug("格式化出现问题：" + file.path, e)
+                    throw e
+                }
+                LogWrapper.loggerWrapper(this).debug("准备覆写文件：该文件总共" + keyList.size + "个格式化文案，" + file.path)
+                file.writeText(newContentTxt.replace(placeholder, special))
+            }
+        }
+        //开始回写values
+        if (!debug) {
+            tryOldKey2NewKey()
+        }
+    }
+
+    @Deprecated("废弃")
+    fun scanCore() {
+        val oldKey2NewKeyMap = getOldKey2NewKeyMap()
         val noNewKeyValue = "noNewKeyValue"
         FileUtilsWrapper.scanDirListByLine(
             listOf(
-                "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
-                "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main"
+                "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
+                "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main"
             ),
             linePretreatment = object : LinePretreatment {
                 override fun line2NewLine(
@@ -136,9 +212,45 @@ object KeyConvertCore {
                     println("=======打印出错的文件集合，注意排查处理========")
                     println(processErrorFileList)
 
-                    value2NewValue()
+                    tryOldKey2NewKey()
                 }
             })
+    }
+
+    /**
+     * 把strings.xml中的老key替换为新key
+     */
+    fun tryOldKey2NewKey() {
+        println("===========把strings.xml中的老key替换为新key============")
+        val oldKey2NewKeyMap = getOldKey2NewKeyMap()
+
+        FileConfig.languageDirNameList.forEach { languageTriple ->
+            val stringsXmlPath = FileConfig.getFullDefaultValuesPath(
+                FileConfig.moduleList[1],
+                languageTriple.first
+            )
+            val second = languageTriple.second
+            val suffix = second.substring(second.length - 2)
+            val realSuffix = "_" + suffix
+            val map = XmlCore.stringsXml2SortedMap(stringsXmlPath)
+            val newMap = LinkedHashMap<String, String>()
+            map.forEach {
+                val key = it.key
+                val newKey = oldKey2NewKeyMap[key]
+                val value = it.value
+                //移除语言后缀
+                val finalValue = value.replace(realSuffix, "")
+                newMap[newKey ?: key] = finalValue
+            }
+
+            val sortMap2StringXml = XmlCore.sortMap2StringXml(newMap)
+
+            //wrapper
+            val wrapperValuesPath =
+                FileConfig.getFullDefaultValuesPath(FileConfig.moduleList[1], languageTriple.first)
+            val file = File(wrapperValuesPath)
+            file.writeText(sortMap2StringXml)
+        }
     }
 
     /**
@@ -218,7 +330,7 @@ object KeyConvertCore {
      */
     fun removeUnUseStringXmlKey() {
         val stringXml =
-            File("/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main/res/values/strings.xml")
+            File("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml")
         val findKeySet = HashSet<String>()
         val stringsXml2SortedMap =
             XmlCore.stringsXml2SortedMap(stringXml.path)
@@ -226,10 +338,10 @@ object KeyConvertCore {
 //            println(it.key + "-->" + it.value)
 //        }
         FileUtilsWrapper.scanDirListByLine(listOf(
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/MPChartLib/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/mycommonlib/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/MPChartLib/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/mycommonlib/src/main",
             "/Users/matt.wang/AsProject/Android-LBK/third_part_lib/faceidmodule/src/main",
             "/Users/matt.wang/AsProject/Android-LBK/lbankcorelib/src/main",
         ), object : LinePretreatment {
