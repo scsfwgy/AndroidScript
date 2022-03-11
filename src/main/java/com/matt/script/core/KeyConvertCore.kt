@@ -19,7 +19,7 @@ fun main() {
     //KeyConvertCore.appStringsXml2WrapperStringsXml()
     //KeyConvertCore.removeUnUseStringXmlKey()
     //KeyConvertCore.stringXmlMarkFlag()
-    ExcelCore.lbkXml2Excel()
+    //ExcelCore.androidLbkXml2Excel()
     // KeyConvertCore.lbkExcel2StringXml()
 }
 

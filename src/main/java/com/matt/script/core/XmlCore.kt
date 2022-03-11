@@ -9,94 +9,64 @@ import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
 
 fun main() {
-   XmlCore.iOSLbkExcel2StringXmlDebug()
+    XmlCore.iOSLbkExcel2StringXmlDebug()
 }
 
 object XmlCore {
 
     const val TAG = "CoreWrapper"
 
+    fun absLbkExcel2StringXml(languageDir: String, excelPath: String, iosType: Boolean) {
+        LogWrapper.loggerWrapper(XmlCore.javaClass)
+            .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
+        LogWrapper.loggerWrapper(this).debug("导出路径：$languageDir,扫描路径：$excelPath,iOS?:$iosType")
+        val baseExcel2StringXml = ExcelUtils.baseExcel2StringXml(excelPath)
+        LogWrapper.loggerWrapper(this)
+            .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
+
+        val tripleList = if (iosType) {
+            FileConfig.languageDirNameListIOS
+        } else {
+            FileConfig.languageDirNameList
+        }
+        tripleList.forEachIndexed { index, triple ->
+            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.first)
+            val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
+            val fullPath = "$dir/$fileName"
+            val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
+            val pairList = baseExcel2StringXml.filterIndexed { index2, _ -> index2 > 0 }.map { itemList ->
+                val defaultKey = itemList[1]
+                //val key = itemList[1]
+                val newKey = itemList[2]
+                val realKey = if (newKey.isNullOrEmpty()) defaultKey ?: "no key" else newKey
+                val value = itemList[index + 3]
+                //取不到就取英文
+                val finalValue = if (!value.isNullOrEmpty()) {
+                    value
+                } else {
+                    itemList[4]
+                }
+                Pair(realKey, finalValue)
+            }
+            val pairList2StringXml = if (iosType) iOSPairList2StringXml(pairList) else pairList2StringXml(pairList)
+            fullPatFile.writeText(pairList2StringXml)
+            LogWrapper.loggerWrapper(XmlCore.javaClass).debug("输入路径：" + fullPatFile.path)
+        }
+
+    }
+
     fun iOSLbkExcel2StringXmlDebug() {
-        iosLbkExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/temp","/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/RDLocalizable2Excel/iOS多语言自动化抽取转Excel_2022-03-11_15-05-36.xlsx")
+        iosLbkExcel2StringXml(
+            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/temp",
+            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/RDLocalizable2Excel/iOS多语言自动化抽取转Excel_2022-03-11_15-05-36.xlsx"
+        )
     }
 
     /**
      * 将Excel到处为项目用的语言配置 Excel=>strings.xml List
      */
     fun iosLbkExcel2StringXml(languageDir: String, excelPath: String) {
-        LogWrapper.loggerWrapper(XmlCore.javaClass)
-            .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
-        val baseExcel2StringXml =
-            ExcelUtils.baseExcel2StringXml(excelPath)
-        LogWrapper.loggerWrapper(KeyConvertCore::class.java)
-            .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
-
-        FileConfig.languageDirNameListIOS.forEachIndexed { index, triple ->
-            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.first)
-            val fileName = FileConfig.stringsXmlFileNameIOS
-            val fullPath = "$dir/$fileName"
-            val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
-            val pairList = baseExcel2StringXml.filterIndexed { index2, _ -> index2 > 0 }.map { itemList ->
-                val defaultKey = itemList[1]
-                //val key = itemList[1]
-                val newKey = itemList[2]
-                val realKey = if (newKey.isNullOrEmpty()) defaultKey ?: "no key" else newKey
-                val value = itemList[index + 3]
-                //取不到就取英文
-                val finalValue = if (!value.isNullOrEmpty()) {
-                    value
-                } else {
-                    itemList[4]
-                }
-                Pair(realKey, finalValue)
-            }
-            val pairList2StringXml = iOSPairList2StringXml(pairList)
-            fullPatFile.writeText(pairList2StringXml)
-            LogWrapper.loggerWrapper(XmlCore.javaClass).debug(fullPatFile.path)
-        }
-
-    }
-
-    fun lbkExcel2StringXmlDebug() {
-        val path =
-            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Excel2Xml/" + FileUtilsWrapper.defaultTimeName()
-        lbkExcel2StringXml(path)
-    }
-
-    /**
-     * 将Excel到处为项目用的语言配置 Excel=>strings.xml List
-     */
-    fun lbkExcel2StringXml(resPathDir: String) {
-        LogWrapper.loggerWrapper(XmlCore.javaClass)
-            .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
-        val baseExcel2StringXml =
-            ExcelUtils.baseExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-03-01_15-26-04.xlsx")
-        LogWrapper.loggerWrapper(KeyConvertCore::class.java)
-            .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
-
-        FileConfig.languageDirNameList.forEachIndexed { index, triple ->
-            val dir = FileUtilsWrapper.getDirByCreate(resPathDir + "/" + triple.first)
-            val fileName = "strings.xml"
-            val fullPath = "$dir/$fileName"
-            val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
-            val pairList = baseExcel2StringXml.filterIndexed { index2, _ -> index2 > 0 }.map { itemList ->
-                val defaultKey = itemList[1]
-                //val key = itemList[1]
-                val newKey = itemList[2]
-                val realKey = if (newKey.isNullOrEmpty()) defaultKey ?: "no key" else newKey
-                val value = itemList[index + 3]
-                //取不到就取英文
-                val finalValue = if (!value.isNullOrEmpty()) {
-                    value
-                } else {
-                    itemList[4]
-                }
-                Pair(realKey, finalValue)
-            }
-            val pairList2StringXml = pairList2StringXml(pairList)
-            fullPatFile.writeText(pairList2StringXml)
-            LogWrapper.loggerWrapper(XmlCore.javaClass).debug(fullPatFile.path)
-        }
+        absLbkExcel2StringXml(languageDir, excelPath, true)
 
     }
 

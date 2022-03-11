@@ -17,32 +17,9 @@ fun main() {
 }
 
 object ExcelCore {
-
-
-    /**
-     * iOS将语言导出为标准的产品需要的格式
-     */
-    fun iOSLbkRDLocalizable2Excel(languagePath: String, excelOutPathDir: String) {
-        println("===========将语言导出为标准的产品需要的格式============")
-        val stringListMap = FileConfig.languageDirNameListIOS.map { languageTriple ->
-            val fullPath = languagePath + "/" + languageTriple.first + "/" + FileConfig.stringsXmlFileNameIOS
-
-            //追加后缀
-//            val second = languageTriple.second
-//            val suffix = second.substring(second.length - 2)
-//            val realSuffix = "_" + suffix
-
-
-            val map = XmlCore.rDLocalizable2SortMap(fullPath)
-            val newMap = LinkedHashMap<String, String>()
-            map.forEach {
-                newMap[it.key] = it.value
-            }
-            newMap
-        }
-
+    fun asbLbkLanguage2Excel(excelOutPathDir: String, mapList: List<Map<String, String>>) {
         //默认
-        val keyList = stringListMap[0].keys
+        val keyList = mapList[0].keys
 
         val realList = ArrayList<List<String?>>()
 
@@ -61,80 +38,58 @@ object ExcelCore {
             itemList.add(if (isNewKey) key.filterIndexed { index, _ -> index < 8 } else null)
             itemList.add(if (isNewKey) null else key)
             itemList.add(if (isNewKey) key else null)
-            stringListMap.forEach {
+            mapList.forEach {
                 itemList.add(it[key])
             }
             realList.add(itemList)
         }
         LogWrapper.loggerWrapper(KeyConvertCore::class.java)
             .debug("==>" + realList.size + "," + realList.firstOrNull()?.size)
-        val excelFileName = "iOS多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultTimeName() + ".xlsx"
+        val excelFileName = "多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultTimeName() + ".xlsx"
         val fileByCreate =
             FileUtilsWrapper.getFileByCreate("$excelOutPathDir/$excelFileName")
         ExcelUtils.baseXml2Excel(
             fileByCreate,
             realList,
-            "iOS语言集合"
+            "语言集合"
         )
         LogWrapper.loggerWrapper(KeyConvertCore::class.java)
             .debug("最终输出位置" + fileByCreate.path)
     }
 
-    /**
-     * 将语言导出为标准的产品需要的格式 strings.xml List=>Excel
-     */
-    fun lbkXml2Excel() {
-        println("===========将语言导出为标准的产品需要的格式============")
-        val stringListMap = FileConfig.languageDirNameList.map { languageTriple ->
-            val stringsXmlPath = FileConfig.getFullDefaultValuesPath(
-                FileConfig.moduleList[1],
-                languageTriple.first
-            )
-            val second = languageTriple.second
-            val suffix = second.substring(second.length - 2)
-            val realSuffix = "_" + suffix
-            val map = XmlCore.stringsXml2SortedMap(stringsXmlPath)
+    fun asbLbkLanguage2ExcelWrapper(
+        languagePath: String,
+        excelOutPathDir: String,
+        iosType: Boolean
+    ) {
+        LogWrapper.loggerWrapper(this).debug("===========将语言导出为标准的产品需要的格式============")
+        LogWrapper.loggerWrapper(this).debug("扫描路径：$languagePath,导出路径：$excelOutPathDir,iOS?:$iosType")
+        val tripleList = if (iosType) FileConfig.languageDirNameListIOS else FileConfig.languageDirNameListIOS
+        val mapList = tripleList.map { languageTriple ->
+            val fullPath = languagePath + "/" + languageTriple.first + "/" + FileConfig.stringsXmlFileNameIOS
+            val map = if (iosType) XmlCore.rDLocalizable2SortMap(fullPath) else XmlCore.stringsXml2SortedMap(fullPath)
             val newMap = LinkedHashMap<String, String>()
             map.forEach {
-                newMap[it.key] = it.value.replace(realSuffix, "")
+                newMap[it.key] = it.value
             }
-
             newMap
         }
+        asbLbkLanguage2Excel(excelOutPathDir, mapList)
+    }
 
-        //默认
-        val keyList = stringListMap[0].keys
 
-        val realList = ArrayList<List<String?>>()
+    /**
+     * iOS将语言导出为标准的产品需要的格式
+     */
+    fun iOSLbkRDLocalizable2Excel(languagePath: String, excelOutPathDir: String) {
+        asbLbkLanguage2ExcelWrapper(languagePath, excelOutPathDir, true)
+    }
 
-        val headList = ArrayList<String?>()
-        headList.add("key")
-        headList.add("defaultKey")
-        headList.add("newkey")
-        FileConfig.languageDirNameList.forEach {
-            headList.add(it.second)
-        }
-        realList.add(headList)
-
-        keyList.forEach { key ->
-            val isNewKey = key.startsWith("L0")
-            val itemList = ArrayList<String?>()
-            itemList.add(if (isNewKey) key.filterIndexed { index, _ -> index < 8 } else null)
-            itemList.add(if (isNewKey) null else key)
-            itemList.add(if (isNewKey) key else null)
-            stringListMap.forEach {
-                itemList.add(it[key])
-            }
-            realList.add(itemList)
-        }
-        LogWrapper.loggerWrapper(KeyConvertCore::class.java)
-            .debug("==>" + realList.size + "," + realList.firstOrNull()?.size)
-        val excelFileName = "Android多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultTimeName() + ".xlsx"
-        ExcelUtils.baseXml2Excel(
-            FileUtilsWrapper.getFileByCreate("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/" + excelFileName),
-            realList,
-            "Android语言集合"
-        )
+    /**
+     * Android将语言导出为标准的产品需要的格式 strings.xml List=>Excel
+     */
+    fun androidLbkXml2Excel(languagePath: String, excelOutPathDir: String) {
+        asbLbkLanguage2ExcelWrapper(languagePath, excelOutPathDir, false)
     }
 
 
