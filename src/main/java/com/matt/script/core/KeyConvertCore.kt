@@ -220,7 +220,7 @@ object KeyConvertCore {
             val fullPath = languagePath + "/" + languageTriple.first + "/" + fileName
             LogWrapper.loggerWrapper(this).debug("配置文件全路径：" + fullPath)
 
-            val map = XmlCore.stringsXml2SortedMap(fullPath)
+            val map = if (iosType) XmlCore.rDLocalizable2SortMap(fullPath) else XmlCore.stringsXml2SortedMap(fullPath)
             val newMap = LinkedHashMap<String, String>()
             map.forEach {
                 val key = it.key
