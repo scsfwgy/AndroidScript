@@ -10,7 +10,10 @@ import java.io.File
 import java.io.FileInputStream
 
 fun main() {
-    ExcelCore.iOSLbkRDLocalizable2Excel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language")
+    ExcelCore.iOSLbkRDLocalizable2Excel(
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language",
+        FileUtilsWrapper.getDirByCreate("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/RDLocalizable2Excel")
+    )
 }
 
 object ExcelCore {
@@ -19,7 +22,7 @@ object ExcelCore {
     /**
      * iOS将语言导出为标准的产品需要的格式
      */
-    fun iOSLbkRDLocalizable2Excel(languagePath: String) {
+    fun iOSLbkRDLocalizable2Excel(languagePath: String, excelOutPathDir: String) {
         println("===========将语言导出为标准的产品需要的格式============")
         val stringListMap = FileConfig.languageDirNameListIOS.map { languageTriple ->
             val fullPath = languagePath + "/" + languageTriple.first + "/" + FileConfig.stringsXmlFileNameIOS
@@ -66,11 +69,15 @@ object ExcelCore {
         LogWrapper.loggerWrapper(KeyConvertCore::class.java)
             .debug("==>" + realList.size + "," + realList.firstOrNull()?.size)
         val excelFileName = "iOS多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultTimeName() + ".xlsx"
+        val fileByCreate =
+            FileUtilsWrapper.getFileByCreate("$excelOutPathDir/$excelFileName")
         ExcelUtils.baseXml2Excel(
-            FileUtilsWrapper.getFileByCreate("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/RDLocalizable2Excel/" + excelFileName),
+            fileByCreate,
             realList,
             "iOS语言集合"
         )
+        LogWrapper.loggerWrapper(KeyConvertCore::class.java)
+            .debug("最终输出位置" + fileByCreate.path)
     }
 
     /**
