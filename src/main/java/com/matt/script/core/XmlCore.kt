@@ -5,11 +5,57 @@ import com.matt.script.config.LogWrapper
 import com.matt.script.utils.ExcelUtils
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
+import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
+
+fun main() {
+   XmlCore.iOSLbkExcel2StringXmlDebug()
+}
 
 object XmlCore {
 
     const val TAG = "CoreWrapper"
+
+    fun iOSLbkExcel2StringXmlDebug() {
+        iosLbkExcel2StringXml("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/temp","/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/RDLocalizable2Excel/iOS多语言自动化抽取转Excel_2022-03-11_15-05-36.xlsx")
+    }
+
+    /**
+     * 将Excel到处为项目用的语言配置 Excel=>strings.xml List
+     */
+    fun iosLbkExcel2StringXml(languageDir: String, excelPath: String) {
+        LogWrapper.loggerWrapper(XmlCore.javaClass)
+            .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
+        val baseExcel2StringXml =
+            ExcelUtils.baseExcel2StringXml(excelPath)
+        LogWrapper.loggerWrapper(KeyConvertCore::class.java)
+            .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
+
+        FileConfig.languageDirNameListIOS.forEachIndexed { index, triple ->
+            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.first)
+            val fileName = FileConfig.stringsXmlFileNameIOS
+            val fullPath = "$dir/$fileName"
+            val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
+            val pairList = baseExcel2StringXml.filterIndexed { index2, _ -> index2 > 0 }.map { itemList ->
+                val defaultKey = itemList[1]
+                //val key = itemList[1]
+                val newKey = itemList[2]
+                val realKey = if (newKey.isNullOrEmpty()) defaultKey ?: "no key" else newKey
+                val value = itemList[index + 3]
+                //取不到就取英文
+                val finalValue = if (!value.isNullOrEmpty()) {
+                    value
+                } else {
+                    itemList[4]
+                }
+                Pair(realKey, finalValue)
+            }
+            val pairList2StringXml = iOSPairList2StringXml(pairList)
+            fullPatFile.writeText(pairList2StringXml)
+            LogWrapper.loggerWrapper(XmlCore.javaClass).debug(fullPatFile.path)
+        }
+
+    }
 
     fun lbkExcel2StringXmlDebug() {
         val path =
@@ -84,6 +130,14 @@ object XmlCore {
         return pairList2StringXml(list)
     }
 
+    fun iOSPairList2StringXml(list: List<Pair<String, String?>>): String {
+        val map = LinkedHashMap<String, String>()
+        list.forEach {
+            map[it.first] = it.second ?: ""
+        }
+        return map2RDLocalizableStr(map)
+    }
+
     fun pairList2StringXml(list: List<Pair<String, String?>>): String {
         //AS默认的格式化格式
         return """
@@ -101,5 +155,39 @@ object XmlCore {
 
     private fun pair2StringLine(pair: Pair<String, String?>): String {
         return """<string name="${pair.first}">${pair.second}</string>""".trimIndent()
+    }
+
+    /**
+     * iOS配置文件转化为排好序的map
+     */
+    fun rDLocalizable2SortMap(rDLocalizablePath: String): Map<String, String> {
+        val readLines = File(rDLocalizablePath).readLines()
+        val map = LinkedHashMap<String, String>()
+        readLines.forEach {
+            if (it.trim().isNotEmpty()) {
+                val keyList = RegexUtils.getMatches(RegexUtilsWrapper.iosRDLocalizableKey, it)
+                val valueList = RegexUtils.getMatches(RegexUtilsWrapper.iosRDLocalizableValue, it)
+                if (keyList.size != 1 || valueList.size != 1) throw IllegalAccessException("解析错误请排查：" + keyList + "，" + valueList + "====>>>" + it)
+                map[keyList.first()] = valueList.first()
+            }
+        }
+        return map
+    }
+
+    fun map2RDLocalizableStr(map: Map<String, String>): String {
+        var msg = ""
+        map.keys.forEachIndexed { index, key ->
+            msg += kv2RDLocalizableLine(key, map[key])
+            if (index != map.size - 1) {
+                msg += "\n"
+            }
+        }
+        return msg
+    }
+
+    fun kv2RDLocalizableLine(k: String, v: String?): String {
+        return """
+            "$k"="$v";
+        """.trimIndent()
     }
 }

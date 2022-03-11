@@ -9,7 +9,69 @@ import org.apache.poi.ss.usermodel.CellType
 import java.io.File
 import java.io.FileInputStream
 
+fun main() {
+    ExcelCore.iOSLbkRDLocalizable2Excel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language")
+}
+
 object ExcelCore {
+
+
+    /**
+     * iOS将语言导出为标准的产品需要的格式
+     */
+    fun iOSLbkRDLocalizable2Excel(languagePath: String) {
+        println("===========将语言导出为标准的产品需要的格式============")
+        val stringListMap = FileConfig.languageDirNameListIOS.map { languageTriple ->
+            val fullPath = languagePath + "/" + languageTriple.first + "/" + FileConfig.stringsXmlFileNameIOS
+
+            //追加后缀
+//            val second = languageTriple.second
+//            val suffix = second.substring(second.length - 2)
+//            val realSuffix = "_" + suffix
+
+
+            val map = XmlCore.rDLocalizable2SortMap(fullPath)
+            val newMap = LinkedHashMap<String, String>()
+            map.forEach {
+                newMap[it.key] = it.value
+            }
+            newMap
+        }
+
+        //默认
+        val keyList = stringListMap[0].keys
+
+        val realList = ArrayList<List<String?>>()
+
+        val headList = ArrayList<String?>()
+        headList.add("key")
+        headList.add("defaultKey")
+        headList.add("newkey")
+        FileConfig.languageDirNameListIOS.forEach {
+            headList.add(it.second)
+        }
+        realList.add(headList)
+
+        keyList.forEach { key ->
+            val isNewKey = key.startsWith("L0")
+            val itemList = ArrayList<String?>()
+            itemList.add(if (isNewKey) key.filterIndexed { index, _ -> index < 8 } else null)
+            itemList.add(if (isNewKey) null else key)
+            itemList.add(if (isNewKey) key else null)
+            stringListMap.forEach {
+                itemList.add(it[key])
+            }
+            realList.add(itemList)
+        }
+        LogWrapper.loggerWrapper(KeyConvertCore::class.java)
+            .debug("==>" + realList.size + "," + realList.firstOrNull()?.size)
+        val excelFileName = "iOS多语言自动化抽取转Excel_" + FileUtilsWrapper.defaultTimeName() + ".xlsx"
+        ExcelUtils.baseXml2Excel(
+            FileUtilsWrapper.getFileByCreate("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/RDLocalizable2Excel/" + excelFileName),
+            realList,
+            "iOS语言集合"
+        )
+    }
 
     /**
      * 将语言导出为标准的产品需要的格式 strings.xml List=>Excel

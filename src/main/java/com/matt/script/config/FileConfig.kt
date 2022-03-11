@@ -32,6 +32,25 @@ object FileConfig {
     )
     val stringsXmlFileName = "strings.xml"
 
+    val languageDirNameListIOS = listOf(
+        Triple("zh-Hans.lproj", "zh-CN", "默认语言，中文"),
+        Triple("en.lproj", "en-US", "英文"),
+        Triple("zh-HK.lproj", "zh-TW", "繁体中文"),
+        Triple("ko-KR.lproj", "ko-KR", "韩文"),
+        Triple("vi-VN.lproj", "vi-VN", "越南文"),
+        Triple("pt.lproj", "pt", "葡萄牙文"),
+        Triple("es.lproj", "es", "西班牙文"),
+        Triple("id.lproj", "id", "印尼文"),
+        Triple("ru.lproj", "ru", "俄语"),
+        Triple("tr.lproj", "tr", "土耳其文"),
+        Triple("de.lproj", "de", "德语"),
+        Triple("it.lproj", "it", "意大利语"),
+        Triple("hi.lproj", "hi", "印地语"),
+        Triple("ar.lproj", "ar", "阿拉伯语"),
+        Triple("fa.lproj", "fa", "波斯语"),
+    )
+    val stringsXmlFileNameIOS = "RDLocalizable.strings"
+
     //默认语言：默认全量key都在这个里面
     val defaultValuesName = "values"
 

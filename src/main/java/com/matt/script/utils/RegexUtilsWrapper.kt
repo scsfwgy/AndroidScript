@@ -90,6 +90,14 @@ object RegexUtilsWrapper {
         import(.)*\.R;*\n
     """.trimIndent()
 
+    val iosRDLocalizableKey="""
+        (?<=").+(?="=)
+    """.trimIndent()
+
+    val iosRDLocalizableValue="""
+        (?<==").+(?=")
+    """.trimIndent()
+
     /**
      * 输入多行数据，匹配strings.xml中单行文案:<string name="Home">首页</string>
      */
