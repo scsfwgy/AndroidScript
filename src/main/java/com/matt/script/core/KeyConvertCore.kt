@@ -3,7 +3,6 @@ package com.matt.script.core
 import com.matt.script.config.FileConfig
 import com.matt.script.config.LogWrapper
 import com.matt.script.core.interfaces.FileFilter
-import com.matt.script.core.interfaces.FormatLineConvert
 import com.matt.script.core.interfaces.LinePretreatment
 import com.matt.script.utils.ExcelUtils
 import com.matt.script.utils.FileUtilsWrapper
@@ -49,11 +48,8 @@ object KeyConvertCore {
         }
     }
 
-    fun getOldKey2NewKeyMap(): Map<String, String> {
-        val listList = ExcelUtils.baseExcel2StringXml(
-            "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android多语言自动化抽取转Excel_2022-03-08_13-40-32---2.xlsx",
-            beginRow = 1
-        )
+    fun getOldKey2NewKeyMap(inputExcelPath: String): Map<String, String> {
+        val listList = ExcelUtils.baseExcel2StringXml(inputExcelPath, beginRow = 1)
         val map = HashMap<String, String>()
         listList.forEach {
             val key = it.getOrNull(1)
@@ -69,18 +65,11 @@ object KeyConvertCore {
     /**
      * 新版本旧key替换，更加简单粗暴
      */
-    fun oldKey2NewKey() {
+    fun oldKey2NewKey(scanDirList: List<String>, languageDir: String, inputExcelPath: String, iosType: Boolean) {
         val debug = false
-        val oldKey2NewKeyMap = getOldKey2NewKeyMap()
-        val list = if (debug) {
-            listOf("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp")
-        } else {
-            listOf(
-                "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
-                "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main"
-            )
-        }
-        val fileList = FileUtilsWrapper.scanDirList(list, fileFilter = object : FileFilter {
+        val oldKey2NewKeyMap = getOldKey2NewKeyMap(inputExcelPath)
+        LogWrapper.loggerWrapper(this).debug("oldKey2NewKeyMap：" + oldKey2NewKeyMap)
+        val fileList = FileUtilsWrapper.scanDirList(scanDirList, fileFilter = object : FileFilter {
             override fun filter(file: File): Boolean {
                 val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                 val second = splitFileByDot.second
@@ -120,135 +109,134 @@ object KeyConvertCore {
                     throw e
                 }
                 LogWrapper.loggerWrapper(this).debug("准备覆写文件：该文件总共" + keyList.size + "个格式化文案，" + file.path)
-                file.writeText(newContentTxt.replace(placeholder, special))
+                val replace = newContentTxt.replace(placeholder, special)
+                file.writeText(replace)
             }
         }
         //开始回写values
         if (!debug) {
-            tryOldKey2NewKey()
+            tryOldKey2NewKey(languageDir, inputExcelPath, iosType)
         }
     }
 
-    @Deprecated("废弃")
-    fun scanCore() {
-        val oldKey2NewKeyMap = getOldKey2NewKeyMap()
-        val noNewKeyValue = "noNewKeyValue"
-        FileUtilsWrapper.scanDirListByLine(
-            listOf(
-                "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
-                "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main"
-            ),
-            linePretreatment = object : LinePretreatment {
-                override fun line2NewLine(
-                    file: File,
-                    fileContent: String,
-                    line: String,
-                    lineIndex: Int,
-                    lineSize: Int
-                ): String {
-                    val placeholder = "~~~~~~~~~"
-                    val special = "%"
-                    //val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
-                    val pLine = line.replace(special, placeholder)
-                    var errorType = false
-                    val finalLine = RegexUtilsWrapper.line2FormatLine(
-                        pLine,
-                        fileLineRegex(file),
-                        formatLineConvert = object : FormatLineConvert {
-                            override fun formatLine2NewLine(
-                                formatLine: String,
-                                placeholderList: List<String>?
-                            ): String {
-                                if (placeholderList == null) {
-                                    return formatLine
-                                } else {
-                                    var finalLine = "该行解析错误,请排查具体原因=====>>>" + pLine
-                                    try {
-                                        finalLine = formatLine.format(*placeholderList.map {
-                                            val newKey = oldKey2NewKeyMap[it]
-                                            if (newKey == null) {
-                                                unFindKeySet.add(it)
-                                                println("====>" + file.path + "," + file.name + "," + line)
-                                            }
-                                            //找不大就不处理
-                                            newKey ?: it
-                                        }.toTypedArray())
-                                    } catch (e: Exception) {
-                                        errorType = true
-                                        println("出现异常（后续操作继续）：${file.path},line:$line" + e.localizedMessage)
-                                        e.printStackTrace()
-                                    }
-                                    return finalLine
-                                }
-                            }
-
-                        })
-                    //最后一行
-                    if (lineIndex == lineSize - 1) {
-                        if (errorType) {
-                            processErrorFileList.add(file.path)
-                        }
-                    }
-                    return finalLine.replace(placeholder, special)
-                }
-            },
-            fileFilter = object : FileFilter {
-                override fun filter(file: File): Boolean {
-                    val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
-                    val second = splitFileByDot.second
-                    //只替换这些文件
-                    //return second != null && (second == "java" || second == "kt")
-                    //return second != null && (second == "m")
-                    //return second != null && (second == "xml")
-                    //return second != null && file.name.equals("strings.xml")
-                    return second == "java" || second == "kt" || second == "xml" || second == "m"
-                }
-            },
-            scanFinishConsumer = object : Consumer<Boolean> {
-                override fun accept(t: Boolean) {
-                    println("====================解析结束===========================")
-                    println("=======打印未找到新key的旧key集合========")
-                    println(unFindKeySet)
-                    println("=======打印出错的文件集合，注意排查处理========")
-                    println(processErrorFileList)
-
-                    tryOldKey2NewKey()
-                }
-            })
-    }
+//    @Deprecated("废弃")
+//    fun scanCore() {
+//        val oldKey2NewKeyMap = getOldKey2NewKeyMap()
+//        val noNewKeyValue = "noNewKeyValue"
+//        FileUtilsWrapper.scanDirListByLine(
+//            listOf(
+//                "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
+//                "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main"
+//            ),
+//            linePretreatment = object : LinePretreatment {
+//                override fun line2NewLine(
+//                    file: File,
+//                    fileContent: String,
+//                    line: String,
+//                    lineIndex: Int,
+//                    lineSize: Int
+//                ): String {
+//                    val placeholder = "~~~~~~~~~"
+//                    val special = "%"
+//                    //val pLine = RegexUtils.getReplaceAll(line, RegexUtilsWrapper.iosSpecialRegex, "~~~~~~~~~")
+//                    val pLine = line.replace(special, placeholder)
+//                    var errorType = false
+//                    val finalLine = RegexUtilsWrapper.line2FormatLine(
+//                        pLine,
+//                        fileLineRegex(file),
+//                        formatLineConvert = object : FormatLineConvert {
+//                            override fun formatLine2NewLine(
+//                                formatLine: String,
+//                                placeholderList: List<String>?
+//                            ): String {
+//                                if (placeholderList == null) {
+//                                    return formatLine
+//                                } else {
+//                                    var finalLine = "该行解析错误,请排查具体原因=====>>>" + pLine
+//                                    try {
+//                                        finalLine = formatLine.format(*placeholderList.map {
+//                                            val newKey = oldKey2NewKeyMap[it]
+//                                            if (newKey == null) {
+//                                                unFindKeySet.add(it)
+//                                                println("====>" + file.path + "," + file.name + "," + line)
+//                                            }
+//                                            //找不大就不处理
+//                                            newKey ?: it
+//                                        }.toTypedArray())
+//                                    } catch (e: Exception) {
+//                                        errorType = true
+//                                        println("出现异常（后续操作继续）：${file.path},line:$line" + e.localizedMessage)
+//                                        e.printStackTrace()
+//                                    }
+//                                    return finalLine
+//                                }
+//                            }
+//
+//                        })
+//                    //最后一行
+//                    if (lineIndex == lineSize - 1) {
+//                        if (errorType) {
+//                            processErrorFileList.add(file.path)
+//                        }
+//                    }
+//                    return finalLine.replace(placeholder, special)
+//                }
+//            },
+//            fileFilter = object : FileFilter {
+//                override fun filter(file: File): Boolean {
+//                    val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
+//                    val second = splitFileByDot.second
+//                    //只替换这些文件
+//                    //return second != null && (second == "java" || second == "kt")
+//                    //return second != null && (second == "m")
+//                    //return second != null && (second == "xml")
+//                    //return second != null && file.name.equals("strings.xml")
+//                    return second == "java" || second == "kt" || second == "xml" || second == "m"
+//                }
+//            },
+//            scanFinishConsumer = object : Consumer<Boolean> {
+//                override fun accept(t: Boolean) {
+//                    println("====================解析结束===========================")
+//                    println("=======打印未找到新key的旧key集合========")
+//                    println(unFindKeySet)
+//                    println("=======打印出错的文件集合，注意排查处理========")
+//                    println(processErrorFileList)
+//
+//                    tryOldKey2NewKey()
+//                }
+//            })
+//    }
 
     /**
      * 把strings.xml中的老key替换为新key
      */
-    fun tryOldKey2NewKey() {
+    fun tryOldKey2NewKey(languagePath: String, inputExcelPath: String, iosType: Boolean) {
         println("===========把strings.xml中的老key替换为新key============")
-        val oldKey2NewKeyMap = getOldKey2NewKeyMap()
+        val oldKey2NewKeyMap = getOldKey2NewKeyMap(inputExcelPath)
 
-        FileConfig.languageDirNameList.forEach { languageTriple ->
-            val stringsXmlPath = FileConfig.getFullDefaultValuesPath(
-                FileConfig.moduleList[1],
-                languageTriple.first
-            )
-            val second = languageTriple.second
-            val suffix = second.substring(second.length - 2)
-            val realSuffix = "_" + suffix
-            val map = XmlCore.stringsXml2SortedMap(stringsXmlPath)
+        val languageDir = if (iosType) FileConfig.languageDirNameListIOS else FileConfig.languageDirNameList
+        languageDir.forEach { languageTriple ->
+            val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
+            val fullPath = languagePath + "/" + languageTriple.first + "/" + fileName
+            LogWrapper.loggerWrapper(this).debug("配置文件全路径：" + fullPath)
+
+            val map = XmlCore.stringsXml2SortedMap(fullPath)
             val newMap = LinkedHashMap<String, String>()
             map.forEach {
                 val key = it.key
                 val newKey = oldKey2NewKeyMap[key]
                 val value = it.value
-                //移除语言后缀
-                val finalValue = value.replace(realSuffix, "")
-                newMap[newKey ?: key] = finalValue
+                if (newKey != null) {
+                    LogWrapper.loggerWrapper(this).debug("需要替换：" + newKey + "，" + key)
+                }
+                newMap[newKey ?: key] = value
             }
 
-            val sortMap2StringXml = XmlCore.sortMap2StringXml(newMap)
+            val sortMap2StringXml =
+                if (iosType) XmlCore.iOSSortMap2StringXml(newMap) else XmlCore.sortMap2StringXml(newMap)
 
             //wrapper
-            val wrapperValuesPath =
-                FileConfig.getFullDefaultValuesPath(FileConfig.moduleList[1], languageTriple.first)
-            val file = File(wrapperValuesPath)
+            val file = File(fullPath)
             file.writeText(sortMap2StringXml)
         }
     }

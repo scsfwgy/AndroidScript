@@ -66,7 +66,8 @@ object ExcelCore {
         LogWrapper.loggerWrapper(this).debug("扫描路径：$languagePath,导出路径：$excelOutPathDir,iOS?:$iosType")
         val tripleList = if (iosType) FileConfig.languageDirNameListIOS else FileConfig.languageDirNameListIOS
         val mapList = tripleList.map { languageTriple ->
-            val fullPath = languagePath + "/" + languageTriple.first + "/" + FileConfig.stringsXmlFileNameIOS
+            val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
+            val fullPath = languagePath + "/" + languageTriple.first + "/" + fileName
             val map = if (iosType) XmlCore.rDLocalizable2SortMap(fullPath) else XmlCore.stringsXml2SortedMap(fullPath)
             val newMap = LinkedHashMap<String, String>()
             map.forEach {

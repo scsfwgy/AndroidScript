@@ -100,6 +100,14 @@ object XmlCore {
         return pairList2StringXml(list)
     }
 
+    fun iOSSortMap2StringXml(map: Map<String, String>): String {
+        val list = ArrayList<Pair<String, String>>()
+        map.forEach {
+            list.add(Pair(it.key, it.value))
+        }
+        return iOSPairList2StringXml(list)
+    }
+
     fun iOSPairList2StringXml(list: List<Pair<String, String?>>): String {
         val map = LinkedHashMap<String, String>()
         list.forEach {
