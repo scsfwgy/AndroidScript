@@ -64,7 +64,7 @@ object ExcelCore {
     ) {
         LogWrapper.loggerWrapper(this).debug("===========将语言导出为标准的产品需要的格式============")
         LogWrapper.loggerWrapper(this).debug("扫描路径：$languagePath,导出路径：$excelOutPathDir,iOS?:$iosType")
-        val tripleList = if (iosType) FileConfig.languageDirNameListIOS else FileConfig.languageDirNameListIOS
+        val tripleList = if (iosType) FileConfig.languageDirNameListIOS else FileConfig.languageDirNameList
         val mapList = tripleList.map { languageTriple ->
             val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
             val fullPath = languagePath + "/" + languageTriple.first + "/" + fileName

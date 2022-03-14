@@ -46,7 +46,7 @@ object XmlCore {
                 } else {
                     itemList[4]
                 }
-                Pair(realKey, finalValue)
+                Pair(realKey, realKey)
             }
             val pairList2StringXml = if (iosType) iOSPairList2StringXml(pairList) else pairList2StringXml(pairList)
             fullPatFile.writeText(pairList2StringXml)
@@ -67,7 +67,10 @@ object XmlCore {
      */
     fun iosLbkExcel2StringXml(languageDir: String, excelPath: String) {
         absLbkExcel2StringXml(languageDir, excelPath, true)
+    }
 
+    fun androidLbkExcel2StringXml(languageDir: String, excelPath: String) {
+        absLbkExcel2StringXml(languageDir, excelPath, false)
     }
 
     fun stringsXml2SortedMap(stringsXmlPath: String): Map<String, String> {

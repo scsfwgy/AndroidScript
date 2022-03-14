@@ -1,14 +1,17 @@
-import com.matt.script.core.KeyConvertCore
+import com.matt.script.core.XmlCore
 
 fun main(args: Array<String>) {
     /**
      * 把项目中语言配置文件string.xml文件抽取成Excel
      */
-    //ExcelCore.androidLbkXml2Excel("", "")
+    //ExcelCore.androidLbkXml2Excel("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res", "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel")
     /**
      * 将Excel回写成string.xml
      */
-    //AndroidScript.excel2StringsXml()
+    XmlCore.androidLbkExcel2StringXml(
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-14_16-44-32.xlsx"
+    )
 
     /**
      * 自动扫描出代码中文案并生成strings.xml
@@ -18,15 +21,15 @@ fun main(args: Array<String>) {
     /**
      * 项目中旧key替换成新key
      */
-    KeyConvertCore.oldKey2NewKey(
-        listOf(
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main"
-        ),
-        "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main/res",
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/重要备份/Android多语言自动化抽取转Excel_2022-02-25_15-02-06.xlsx",
-        false
-    )
+//    KeyConvertCore.oldKey2NewKey(
+//        listOf(
+//            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
+//            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main"
+//        ),
+//        "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main/res",
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/重要备份/Android多语言自动化抽取转Excel_2022-02-25_15-02-06.xlsx",
+//        false
+//    )
 
     /**
      * 将语言配置文件导入到Excel

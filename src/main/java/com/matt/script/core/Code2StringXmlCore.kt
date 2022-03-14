@@ -41,7 +41,7 @@ object Code2StringXmlCore {
                 return when (fileByDot.second) {
                     "java", "kt" -> {
                         return Triple(RegexUtilsWrapper.containsZhRegex,
-                            """MyContextUtils.getString(R.string.%s)""".trimIndent(),
+                            """MyContextUtils2.getString(R.string.%s)""".trimIndent(),
                             object : PlaceHolderFilter {
                                 override fun placeholder2RealWords(placeholder: String): String {
                                     return placeholder.replace(
@@ -79,14 +79,17 @@ object Code2StringXmlCore {
                         //判定是否需要导包
                         if (RegexUtils.getMatches(RegexUtilsWrapper.javaOrKtPureStringKeyRegex, fileContent).size > 0) {
                             val rClass = "import com.lbk.lib_wrapper.R"
-                            val stringRClass = "import com.lbk.lib_wrapper.utils.MyContextUtils"
+                            val stringRClass = "import com.lbk.lib_wrapper.widget.language.MyContextUtils2"
                             val appendList = ArrayList<String>()
                             if (RegexUtils.getMatches(
                                     RegexUtilsWrapper.javaOrKtContainerR, fileContent
                                 ).size == 0
                             ) {
                                 appendList.add(rClass)
-                            } else if (!fileContent.contains("MyContextUtils") && !fileContent.contains("ResourcesUtils")) {
+                            } else if (!fileContent.contains("import com.yzj.mycommonlib.Common.MyContextUtils")
+                                && !fileContent.contains("import com.lbk.lib_wrapper.utils.ResourcesUtils")
+                                && !fileContent.contains("import com.lbk.lib_wrapper.widget.language.MyContextUtils2")
+                            ) {
                                 appendList.add(stringRClass)
                             }
                             val newAppend = appendList.joinToString(separator = "\n")
@@ -140,12 +143,18 @@ object Code2StringXmlCore {
                     "LocalWalletWithdraw",
                     "AppWalletServiceV2",
                     //wrapper
-                    "widget",
+                    //"widget",
                     "base",
                     "utils",
                     "exception",
                     "config",
                     "cache",
+                    "HitNewManager",
+                    "DebugUtils",
+                    "LubanSimpleObserver",
+                    "SignManager",
+                    "JPushManager",
+                    "BuglyManager",
                 )
                 val name = file.path
                 if (list.any { name.contains(it) }) {
@@ -265,17 +274,22 @@ object Code2StringXmlCore {
 
 
         LogWrapper.loggerWrapper(this).debug("====================解析结束===========================")
-        LogWrapper.loggerWrapper(this).debug("新扫描生成的key:" + newKey.map { it + "===>" + oldKey2NewKeyMap[it] })
+        LogWrapper.loggerWrapper(this)
+            .debug("新扫描生成的key大小:" + newKey.size + "==>>" + newKey.map { it + "===>" + oldKey2NewKeyMap[it] })
+        LogWrapper.loggerWrapper(this).debug("新扫描生成的key列表")
+        newKey.forEach {
+            println(it + "===>" + oldKey2NewKeyMap[it])
+        }
 
         //开始写入xml
         val pairList2StringXml = XmlCore.pairList2StringXml(oldKey2NewKeyMap.toList())
-        println(pairList2StringXml)
+        //println(pairList2StringXml)
 
         LogWrapper.loggerWrapper(this).debug("------")
 
         val stringXmlPath = FileUtilsWrapper.getFileByCreate(newOutputStringXmlPath)
         stringXmlPath.writeText(pairList2StringXml)
-        //LogWrapper.loggerWrapper(this).debug("操作完成：" + stringXmlPath)
+        LogWrapper.loggerWrapper(this).debug("操作完成：" + stringXmlPath)
     }
 
     fun value2StringKeyAuto(file: File, value: String, map: MutableMap<String, String>): Pair<Boolean, String> {

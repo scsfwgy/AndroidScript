@@ -71,6 +71,10 @@ object RegexUtilsWrapper {
         "(.(?!"))*[\u4e00-\u9fa5]+((?!").)*"
     """.trimIndent()
 
+    val containsZhRegexByLbk = """
+        "(.(?!"))*[\u4e00-\u9fa5]+((?!").)*"
+    """.trimIndent()
+
     /**
      * 包含中文的字符串，不包含前后",举例：xxx"xxx你好xxx"生生世世=>xxx你好xxx
      */
