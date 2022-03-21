@@ -54,6 +54,7 @@ fun main(args: Array<String>) {
      * 删除无用的key
      */
     FindUselessCore.findUselessStringXmlWrapper(
+        FindUselessCore.scanDirList(),
         "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml",
         "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
         iosType = false,

@@ -13,6 +13,7 @@ fun main() {
     //FindUselessCore.findUselessDrawable()
     //println(FileUtilsWrapper.splitFileByDot(File("/Users/matt.wang/AsProject/Android-LBK//app/src/main/res/drawable-xxhdpi/common_shadow_blur_18_y_4.9.png")))
     FindUselessCore.findUselessStringXmlWrapper(
+        FindUselessCore.scanDirList(),
         "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml",
         "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
         false
@@ -23,12 +24,13 @@ object FindUselessCore {
     var count = 0
 
     fun findUselessStringXmlWrapper(
+        scanDirList: List<String>,
         defaultStringXmlPath: String,
         languageDir: String,
         iosType: Boolean,
         onlyFind: Boolean = false
     ) {
-        val dirPath = scanDirList()
+        val dirPath = scanDirList
         val allExistSet = XmlCore.asbStringsXml2SortKeyList(defaultStringXmlPath, iosType)
         val uselessSet = findUselessSetWrapper(
             dirPath,
