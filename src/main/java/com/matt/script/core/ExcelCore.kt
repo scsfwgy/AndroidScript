@@ -111,7 +111,7 @@ object ExcelCore {
                 finalDataMap[moduleName] = languageMap
             }
             val fullDefaultValuesPath = FileConfig.getFullDefaultValuesPath(moduleName, FileConfig.defaultValuesName)
-            val keyList = XmlCore.stringsXml2SortKeyList(fullDefaultValuesPath)
+            val keyList = XmlCore.asbStringsXml2SortKeyList(fullDefaultValuesPath, false)
             FileConfig.languageDirNameList.forEachIndexed { index, pair ->
                 var list = languageMap[pair.first]
                 if (list == null) {

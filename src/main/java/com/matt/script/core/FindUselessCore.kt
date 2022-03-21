@@ -10,18 +10,26 @@ import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
 
 fun main() {
-    FindUselessCore.findUselessStringXml()
     //FindUselessCore.findUselessDrawable()
     //println(FileUtilsWrapper.splitFileByDot(File("/Users/matt.wang/AsProject/Android-LBK//app/src/main/res/drawable-xxhdpi/common_shadow_blur_18_y_4.9.png")))
+    FindUselessCore.findUselessStringXmlWrapper(
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml",
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+        false
+    )
 }
 
 object FindUselessCore {
     var count = 0
-    fun findUselessStringXml() {
+
+    fun findUselessStringXmlWrapper(
+        defaultStringXmlPath: String,
+        languageDir: String,
+        iosType: Boolean,
+        onlyFind: Boolean = false
+    ) {
         val dirPath = scanDirList()
-        val stringXmlPath =
-            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml"
-        val allExistSet = XmlCore.stringsXml2SortKeyList(stringXmlPath).toMutableSet()
+        val allExistSet = XmlCore.asbStringsXml2SortKeyList(defaultStringXmlPath, iosType)
         val uselessSet = findUselessSetWrapper(
             dirPath,
             allExistSet,
@@ -32,11 +40,11 @@ object FindUselessCore {
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表个数：" + uselessSet.size)
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("在使用列表个数：" + (allExistSet.size - uselessSet.size))
 
-        val languageDir = "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res"
+        if (onlyFind) return
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("准备删除无用key....")
         //后续逻辑自己定
         //删除无用key
-        val stringsXml2SortedMap =
-            XmlCore.stringsXml2SortedMap("$languageDir/values/strings.xml")
+        val stringsXml2SortedMap = XmlCore.absStringXml2SortMap(defaultStringXmlPath, iosType)
         val newMap = LinkedHashSet<String>()
         stringsXml2SortedMap.forEach {
             val contains = uselessSet.contains(it.key)
@@ -46,7 +54,7 @@ object FindUselessCore {
         }
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("在使用列表个数：" + newMap.size)
 
-        XmlCore.absStringXml2NewStringXml(languageDir, newMap, false)
+        XmlCore.absStringXml2NewStringXml(languageDir, newMap, iosType)
     }
 
 

@@ -117,8 +117,8 @@ object XmlCore {
         return sortedMap
     }
 
-    fun stringsXml2SortKeyList(stringsXmlPath: String): List<String> {
-        return stringsXml2SortedMap(stringsXmlPath).keys.toList()
+    fun asbStringsXml2SortKeyList(stringsXmlPath: String, iosType: Boolean): Set<String> {
+        return absStringXml2SortMap(stringsXmlPath, iosType).keys
     }
 
     fun sortMap2StringXml(map: Map<String, String>): String {

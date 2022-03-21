@@ -1,10 +1,10 @@
-import com.matt.script.core.ExcelCore
+import com.matt.script.core.FindUselessCore
 
 fun main(args: Array<String>) {
     /**
      * 把项目中语言配置文件string.xml文件抽取成Excel
      */
-    ExcelCore.androidLbkXml2Excel("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res", "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel")
+    //ExcelCore.androidLbkXml2Excel("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res", "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel")
     /**
      * 将Excel回写成string.xml
      */
@@ -48,4 +48,15 @@ fun main(args: Array<String>) {
 //        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/temp",
 //        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/RDLocalizable2Excel/iOS多语言自动化抽取转Excel_2022-03-11_15-05-36.xlsx"
 //    )
+
+
+    /**
+     * 删除无用的key
+     */
+    FindUselessCore.findUselessStringXmlWrapper(
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml",
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+        iosType = false,
+        onlyFind = false
+    )
 }
