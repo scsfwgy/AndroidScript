@@ -12,7 +12,7 @@ import java.io.File
 fun main() {
     FindUselessCore.findUselessStringXml()
     //FindUselessCore.findUselessDrawable()
-    //println(FileUtilsWrapper.splitFileByDot(File("/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main/res/drawable-xxhdpi/common_shadow_blur_18_y_4.9.png")))
+    //println(FileUtilsWrapper.splitFileByDot(File("/Users/matt.wang/AsProject/Android-LBK//app/src/main/res/drawable-xxhdpi/common_shadow_blur_18_y_4.9.png")))
 }
 
 object FindUselessCore {
@@ -20,7 +20,7 @@ object FindUselessCore {
     fun findUselessStringXml() {
         val dirPath = scanDirList()
         val stringXmlPath =
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/mycommonlib/src/main/res/values/strings.xml"
+            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml"
         val allExistSet = XmlCore.stringsXml2SortKeyList(stringXmlPath).toMutableSet()
         val uselessSet = findUselessSetWrapper(
             dirPath,
@@ -29,6 +29,24 @@ object FindUselessCore {
             RegexUtilsWrapper.xmlPureStringKeyRegex
         )
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表个数：" + uselessSet.size)
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("在使用列表个数：" + (allExistSet.size - uselessSet.size))
+
+        val languageDir = "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res"
+        //后续逻辑自己定
+        //删除无用key
+        val stringsXml2SortedMap =
+            XmlCore.stringsXml2SortedMap("$languageDir/values/strings.xml")
+        val newMap = LinkedHashSet<String>()
+        stringsXml2SortedMap.forEach {
+            val contains = uselessSet.contains(it.key)
+            if (!contains) {
+                newMap.add(it.key)
+            }
+        }
+        LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("在使用列表个数：" + newMap.size)
+
+        XmlCore.absStringXml2NewStringXml(languageDir, newMap, false)
     }
 
 
@@ -133,7 +151,7 @@ object FindUselessCore {
         FileUtilsWrapper.scanDirList(dirPath, fileFilter).forEach {
             val findKeySet = fileFindKey.find(it) ?: return@forEach
             if (findKeySet.isNotEmpty()) {
-                //LogUtils.loggerWrapper(FindUselessCore.javaClass).debug(findKeySet)
+                LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug(findKeySet)
                 findUsageKey(findKeySet, usageKeySet, allExistSet)
             }
         }
@@ -162,12 +180,12 @@ object FindUselessCore {
 
     fun scanDirList(): List<String> {
         return listOf(
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/app/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lib_wrapper/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/MPChartLib/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/mycommonlib/src/main",
-            //"/Users/matt.wang/AndroidStudioProjects/Android-LBK/third_part_lib/faceidmodule/src/main",
-            "/Users/matt.wang/AndroidStudioProjects/Android-LBK/lbankcorelib/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK//app/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK//lib_wrapper/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK//third_part_lib/MPChartLib/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK//third_part_lib/mycommonlib/src/main",
+            //"/Users/matt.wang/AsProject/Android-LBK//third_part_lib/faceidmodule/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK//lbankcorelib/src/main",
         )
     }
 }

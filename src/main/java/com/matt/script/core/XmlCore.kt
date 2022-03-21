@@ -16,6 +16,32 @@ object XmlCore {
 
     const val TAG = "CoreWrapper"
 
+    fun absStringXml2NewStringXml(languageDir: String, newSortKeySet: Set<String>, iosType: Boolean) {
+        LogWrapper.loggerWrapper(XmlCore.javaClass)
+            .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
+        LogWrapper.loggerWrapper(this).debug("导出路径：$languageDir,扫描路径：${newSortKeySet.size},iOS?:$iosType")
+
+        val tripleList = if (iosType) {
+            FileConfig.languageDirNameListIOS
+        } else {
+            FileConfig.languageDirNameList
+        }
+        tripleList.forEachIndexed { index, triple ->
+            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.first)
+            val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
+            val fullPath = "$dir/$fileName"
+            val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
+            val oldMap = absStringXml2SortMap(fullPath, iosType)
+            val newSortMap = LinkedHashMap<String, String>()
+            newSortKeySet.forEach {
+                newSortMap[it] = oldMap[it] ?: it
+            }
+            val pairList2StringXml = asbMap2StringXml(newSortMap, iosType)
+            fullPatFile.writeText(pairList2StringXml)
+            LogWrapper.loggerWrapper(XmlCore.javaClass).debug("输入路径：" + fullPatFile.path)
+        }
+    }
+
     fun absLbkExcel2StringXml(languageDir: String, excelPath: String, iosType: Boolean) {
         LogWrapper.loggerWrapper(XmlCore.javaClass)
             .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
@@ -119,6 +145,10 @@ object XmlCore {
         return map2RDLocalizableStr(map)
     }
 
+    fun asbMap2StringXml(sortMap: Map<String, String>, iosType: Boolean): String {
+        return if (iosType) iOSSortMap2StringXml(sortMap) else sortMap2StringXml(sortMap)
+    }
+
     fun pairList2StringXml(list: List<Pair<String, String?>>): String {
         //AS默认的格式化格式
         return """
@@ -136,6 +166,10 @@ object XmlCore {
 
     private fun pair2StringLine(pair: Pair<String, String?>): String {
         return """<string name="${pair.first}">${pair.second}</string>""".trimIndent()
+    }
+
+    fun absStringXml2SortMap(filePath: String, iosType: Boolean = false): Map<String, String> {
+        return if (iosType) rDLocalizable2SortMap(filePath) else stringsXml2SortedMap(filePath)
     }
 
     /**
