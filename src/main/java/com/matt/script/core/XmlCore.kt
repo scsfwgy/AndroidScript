@@ -72,7 +72,7 @@ object XmlCore {
                 } else {
                     itemList[4]
                 }
-                Pair(realKey, finalValue)
+                Pair(realKey, realKey)
             }
             val pairList2StringXml = if (iosType) iOSPairList2StringXml(pairList) else pairList2StringXml(pairList)
             fullPatFile.writeText(pairList2StringXml)

@@ -1,4 +1,4 @@
-import com.matt.script.core.FindUselessCore
+import com.matt.script.core.XmlCore
 
 fun main(args: Array<String>) {
     /**
@@ -8,10 +8,10 @@ fun main(args: Array<String>) {
     /**
      * 将Excel回写成string.xml
      */
-//    XmlCore.androidLbkExcel2StringXml(
-//        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-14_16-44-32.xlsx"
-//    )
+    XmlCore.androidLbkExcel2StringXml(
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-21_18-34-41-new2.xlsx"
+    )
 
     /**
      * 自动扫描出代码中文案并生成strings.xml
@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
 //            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main"
 //        ),
 //        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-14_16-44-32.xlsx",
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-21_18-34-41-new2.xlsx",
 //        false
 //    )
 
@@ -53,11 +53,11 @@ fun main(args: Array<String>) {
     /**
      * 删除无用的key
      */
-    FindUselessCore.findUselessStringXmlWrapper(
-        FindUselessCore.scanDirList(),
-        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml",
-        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-        iosType = false,
-        onlyFind = false
-    )
+//    FindUselessCore.findUselessStringXmlWrapper(
+//        FindUselessCore.scanDirList(),
+//        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res/values/strings.xml",
+//        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+//        iosType = false,
+//        onlyFind = false
+//    )
 }
