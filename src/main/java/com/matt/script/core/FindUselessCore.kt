@@ -1,13 +1,13 @@
 package com.matt.script.core
 
 import com.matt.script.config.LogWrapper
-import com.matt.script.core.interfaces.FileFilter
 import com.matt.script.core.interfaces.FileFindKey
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.FileUtils
 import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
+import java.io.FileFilter
 
 fun main() {
     //FindUselessCore.findUselessDrawable()
@@ -63,12 +63,12 @@ object FindUselessCore {
     fun findUselessDrawable() {
         val dirPath = scanDirList()
         val realList = FileUtilsWrapper.getFilterDirPath(dirPath, "res", object : FileFilter {
-            override fun filter(file: File): Boolean {
+            override fun accept(file: File): Boolean {
                 return file.isDirectory && file.name.startsWith("drawable")
             }
         }).map { it.path }
         val originKeyList = FileUtilsWrapper.scanDirList(realList, object : FileFilter {
-            override fun filter(file: File): Boolean {
+            override fun accept(file: File): Boolean {
                 return true
             }
         })
@@ -140,7 +140,7 @@ object FindUselessCore {
                 }
             }
         }, object : FileFilter {
-            override fun filter(file: File): Boolean {
+            override fun accept(file: File): Boolean {
                 val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                 val second = splitFileByDot.second
                 return second == "java" || second == "kt" || second == "xml" || second == "m"

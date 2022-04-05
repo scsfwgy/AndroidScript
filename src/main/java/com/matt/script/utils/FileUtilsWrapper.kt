@@ -1,11 +1,11 @@
 package com.matt.script.utils
 
 import com.matt.script.config.LogWrapper
-import com.matt.script.core.interfaces.FileFilter
 import com.matt.script.core.interfaces.LinePretreatment
 import com.matt.script.utils.blankj.FileUtils
 import com.matt.script.utils.blankj.TimeUtils
 import java.io.File
+import java.io.FileFilter
 import java.util.function.Consumer
 
 /**
@@ -22,7 +22,7 @@ object FileUtilsWrapper {
         val listFileByPath = listFileByPathList(dirPath)
         val realList = ArrayList<File>()
         listFileByPath.forEach { file ->
-            if (fileFilter.filter(file)) {
+            if (fileFilter.accept(file)) {
                 realList.add(file)
             }
         }
@@ -162,7 +162,7 @@ object FileUtilsWrapper {
         val map = dirPath.map { dir ->
             FileUtils.listFilesInDirWithFilter(
                 "$dir/$childPath", { file ->
-                    fileFilter.filter(file)
+                    fileFilter.accept(file)
                 }, true
             )
         }

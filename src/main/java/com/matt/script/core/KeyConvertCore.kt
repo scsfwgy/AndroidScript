@@ -2,14 +2,13 @@ package com.matt.script.core
 
 import com.matt.script.config.FileConfig
 import com.matt.script.config.LogWrapper
-import com.matt.script.core.interfaces.FileFilter
 import com.matt.script.core.interfaces.LinePretreatment
 import com.matt.script.utils.ExcelUtils
 import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
-import java.util.function.Consumer
+import java.io.FileFilter
 
 fun main() {
     //KeyConvertCore.scanCore()
@@ -70,7 +69,7 @@ object KeyConvertCore {
         val oldKey2NewKeyMap = getOldKey2NewKeyMap(inputExcelPath)
         LogWrapper.loggerWrapper(this).debug("oldKey2NewKeyMap：" + oldKey2NewKeyMap)
         val fileList = FileUtilsWrapper.scanDirList(scanDirList, fileFilter = object : FileFilter {
-            override fun filter(file: File): Boolean {
+            override fun accept(file: File): Boolean {
                 val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                 val second = splitFileByDot.second
                 //只替换这些文件
@@ -364,27 +363,23 @@ object KeyConvertCore {
                 }
                 return line
             }
-        }, object : FileFilter {
-            override fun filter(file: File): Boolean {
-                val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
-                val second = splitFileByDot.second
-                return second == "java" || second == "kt" || second == "xml" || second == "m"
-            }
-        }, object : Consumer<Boolean> {
-            override fun accept(t: Boolean) {
-                println("====处理完毕===")
-                val unFindKeySet = stringsXml2SortedMap.keys.toMutableSet()
-                unFindKeySet.removeAll(findKeySet)
-                println("未使用列表：" + findKeySet)
-                println("使用列表：" + unFindKeySet)
+        }, { file ->
+            val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
+            val second = splitFileByDot.second
+            second == "java" || second == "kt" || second == "xml" || second == "m"
+        }) {
+            println("====处理完毕===")
+            val unFindKeySet = stringsXml2SortedMap.keys.toMutableSet()
+            unFindKeySet.removeAll(findKeySet)
+            println("未使用列表：" + findKeySet)
+            println("使用列表：" + unFindKeySet)
 
-//                println("====开始回写=====")
-//                val stringMap = stringsXml2SortedMap.filter { findKeySet.contains(it.key) }
-//                val sortMap2StringXml = XmlCore.sortMap2StringXml(stringMap)
-//                stringXml.writeText(sortMap2StringXml)
-//                println("====回写结束=====")
-            }
-        })
+            //                println("====开始回写=====")
+            //                val stringMap = stringsXml2SortedMap.filter { findKeySet.contains(it.key) }
+            //                val sortMap2StringXml = XmlCore.sortMap2StringXml(stringMap)
+            //                stringXml.writeText(sortMap2StringXml)
+            //                println("====回写结束=====")
+        }
     }
 
     /**

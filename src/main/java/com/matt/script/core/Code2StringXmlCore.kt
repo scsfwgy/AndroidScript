@@ -6,6 +6,7 @@ import com.matt.script.utils.FileUtilsWrapper
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
+import java.io.FileFilter
 
 fun main() {
     Code2StringXmlCore.lbkAndroidDemo()
@@ -204,17 +205,15 @@ object Code2StringXmlCore {
         //新生成的key集合
         val newKey = LinkedHashSet<String>()
 
-        val filter = object : FileFilter {
-            override fun filter(file: File): Boolean {
-                val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
-                val second = splitFileByDot.second
-                //只替换这些文件
-                //return second != null && (second == "java" || second == "kt")
-                return second != null && (second == "java" || second == "kt" || second == "xml" || second == "m")
-                //return second != null && (second == "m")
-                //return second != null && (second == "xml")
-                //return true
-            }
+        val filter = FileFilter { file ->
+            val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
+            val second = splitFileByDot.second
+            //只替换这些文件
+            //return second != null && (second == "java" || second == "kt")
+            second != null && (second == "java" || second == "kt" || second == "xml" || second == "m")
+            //return second != null && (second == "m")
+            //return second != null && (second == "xml")
+            //return true
         }
 
         //扫描出所有符合条件的文件

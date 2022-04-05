@@ -1,8 +1,8 @@
 package com.matt.script.core
 
-import com.matt.script.core.interfaces.FileFilter
 import com.matt.script.core.language.ScanFileLanguage
 import com.matt.script.utils.FileUtilsWrapper
+import java.io.FileFilter
 
 object Code2LanguageConfig {
     /**
