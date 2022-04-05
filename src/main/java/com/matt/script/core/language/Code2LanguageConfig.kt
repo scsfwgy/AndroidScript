@@ -1,12 +1,11 @@
-package com.matt.script.core
+package com.matt.script.core.language
 
-import com.matt.script.core.language.ScanFileLanguage
 import com.matt.script.utils.FileUtilsWrapper
 import java.io.FileFilter
 
 object Code2LanguageConfig {
     /**
-     * @param scanDirList 要扫描的文件件
+     * @param scanDirList 要扫描的文件列表集合
      * @param alreadyExistLanguageSortMap 配置文件对应的排好序map
      * @param fileFilter 对扫描的文件的过滤
      * @param scanFileLanguage 核心逻辑：输入文件，已存在map=>完成key的替换同时返回新增key
