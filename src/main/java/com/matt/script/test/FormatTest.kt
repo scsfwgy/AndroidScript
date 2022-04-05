@@ -1,10 +1,35 @@
 package com.matt.script.test
 
+import java.math.BigDecimal
+
 fun main() {
-    FormatTest.test()
+    for (i in 0..21) {
+        val data = i - 5
+        println(FormatTest.localDepthTypeConvert(data.toString()))
+    }
 }
 
 object FormatTest {
+
+    fun localDepthTypeConvert(originKeyStr: String): Pair<String, String> {
+        try {
+            return localDepthTypeConvertLocal(originKeyStr)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return Pair("", "")
+        }
+    }
+
+    fun localDepthTypeConvertLocal(originKeyStr: String): Pair<String, String> {
+        val originKey = originKeyStr.toIntOrNull() ?: 0
+        val pair = if (originKey < 0) {
+            Pair(BigDecimal(10).pow(-originKey), BigDecimal(1).divide(BigDecimal(10).pow(-originKey)))
+        } else {
+            Pair(BigDecimal(1).divide(BigDecimal(10).pow(originKey)), BigDecimal(10).pow(originKey))
+        }
+        return Pair(pair.first.toPlainString(), pair.second.toPlainString())
+    }
+
     /**
      * out:
      * 第一个参数：参数a，第二个参数：参数b
@@ -50,7 +75,7 @@ object FormatTest {
 //        println(StringWrapper.format("{0}s后重新发送", "2"))
 //        println(StringWrapper.format("{0}s后重新发送", 2.3f))
 
-        val list= listOf("base","sss.base.ssssdd")
+        val list = listOf("base", "sss.base.ssssdd")
         println(list.filter { it.contains("base") })
     }
 }

@@ -1,3 +1,4 @@
+import com.matt.script.core.Code2StringXmlCore
 import com.matt.script.core.XmlCore
 
 fun main(args: Array<String>) {
@@ -10,13 +11,13 @@ fun main(args: Array<String>) {
      */
     XmlCore.androidLbkExcel2StringXml(
         "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-21_18-34-41-new2.xlsx"
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-26--22.xlsx"
     )
 
     /**
      * 自动扫描出代码中文案并生成strings.xml
      */
-    //Code2StringXmlCore.lbkAndroidDemo()
+    Code2StringXmlCore.lbkAndroidDemo()
 
     /**
      * 项目中旧key替换成新key
