@@ -50,13 +50,9 @@ object XmlCore {
         LogWrapper.loggerWrapper(this)
             .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
 
-        val tripleList = if (iosType) {
-            FileConfig.languageDirNameListIOS
-        } else {
-            FileConfig.languageDirNameList
-        }
+        val tripleList = ExcelCore.loadDefaultLanguageList()
         tripleList.forEachIndexed { index, triple ->
-            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.first)
+            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.languageDir(iosType))
             val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
             val fullPath = "$dir/$fileName"
             val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
@@ -70,7 +66,7 @@ object XmlCore {
                 val finalValue = if (!value.isNullOrEmpty()) {
                     value
                 } else {
-                    itemList[4]
+                    itemList[3]
                 }
                 Pair(realKey, finalValue)
             }

@@ -1,23 +1,22 @@
-import com.matt.script.core.Code2StringXmlCore
-import com.matt.script.core.XmlCore
+import com.matt.script.core.ExcelCore
 
 fun main(args: Array<String>) {
     /**
      * 把项目中语言配置文件string.xml文件抽取成Excel
      */
-    //ExcelCore.androidLbkXml2Excel("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res", "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel")
+    ExcelCore.androidLbkXml2Excel("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res", "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel")
     /**
      * 将Excel回写成string.xml
      */
-    XmlCore.androidLbkExcel2StringXml(
-        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-26--22.xlsx"
-    )
+//    XmlCore.androidLbkExcel2StringXml(
+//        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-04-08_13-37-54.xlsx"
+//    )
 
     /**
      * 自动扫描出代码中文案并生成strings.xml
      */
-    Code2StringXmlCore.lbkAndroidDemo()
+    //Code2StringXmlCore.lbkAndroidDemo()
 
     /**
      * 项目中旧key替换成新key

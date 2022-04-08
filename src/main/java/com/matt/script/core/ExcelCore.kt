@@ -2,6 +2,7 @@ package com.matt.script.core
 
 import com.matt.script.config.FileConfig
 import com.matt.script.config.LogWrapper
+import com.matt.script.core.language.LocalLanguage
 import com.matt.script.utils.ExcelUtils
 import com.matt.script.utils.FileUtilsWrapper
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -27,8 +28,8 @@ object ExcelCore {
         headList.add("key")
         headList.add("defaultKey")
         headList.add("newkey")
-        FileConfig.languageDirNameListIOS.forEach {
-            headList.add(it.second)
+        loadDefaultLanguageList().forEach {
+            headList.add("${it.key}(${it.chineseName})")
         }
         realList.add(headList)
 
@@ -57,6 +58,10 @@ object ExcelCore {
             .debug("最终输出位置" + fileByCreate.path)
     }
 
+    fun loadDefaultLanguageList(): List<LocalLanguage> {
+        return loadLanguageListByExcel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/language/language.xlsx")
+    }
+
     fun asbLbkLanguage2ExcelWrapper(
         languagePath: String,
         excelOutPathDir: String,
@@ -64,10 +69,10 @@ object ExcelCore {
     ) {
         LogWrapper.loggerWrapper(this).debug("===========将语言导出为标准的产品需要的格式============")
         LogWrapper.loggerWrapper(this).debug("扫描路径：$languagePath,导出路径：$excelOutPathDir,iOS?:$iosType")
-        val tripleList = if (iosType) FileConfig.languageDirNameListIOS else FileConfig.languageDirNameList
+        val tripleList = loadDefaultLanguageList()
         val mapList = tripleList.map { languageTriple ->
             val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
-            val fullPath = languagePath + "/" + languageTriple.first + "/" + fileName
+            val fullPath = languagePath + "/" + languageTriple.languageDir(iosType) + "/" + fileName
             val map = if (iosType) XmlCore.rDLocalizable2SortMap(fullPath) else XmlCore.stringsXml2SortedMap(fullPath)
             val newMap = LinkedHashMap<String, String>()
             map.forEach {
@@ -148,5 +153,26 @@ object ExcelCore {
         }
         fileInputStream.close()
         return map
+    }
+
+    fun loadLanguageListByExcel(excelPath: String): List<LocalLanguage> {
+        val baseExcel2StringXml = ExcelUtils.baseExcel2StringXml(excelPath, 0, 1)
+        val list = ArrayList<LocalLanguage>()
+        baseExcel2StringXml.forEach {
+            list.add(
+                LocalLanguage(
+                    it[0] ?: "",
+                    it[1] ?: "",
+                    it[2] ?: "",
+                    it[3] ?: "",
+                    it[4] ?: "",
+                    it[5] ?: "",
+                    it[6] ?: "",
+                    it[7].equals("true", true),
+                    it[8] ?: "",
+                )
+            )
+        }
+        return list
     }
 }

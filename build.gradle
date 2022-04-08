@@ -29,6 +29,9 @@ dependencies {
 
     //https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml/5.2.0
     api 'org.apache.poi:poi-ooxml:5.2.0'
+
+    // https://github.com/google/gson
+    api "com.google.code.gson:gson:2.9.0"
 }
 
 test {
