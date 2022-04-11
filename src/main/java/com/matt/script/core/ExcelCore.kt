@@ -1,5 +1,6 @@
 package com.matt.script.core
 
+import com.google.gson.Gson
 import com.matt.script.config.FileConfig
 import com.matt.script.config.LogWrapper
 import com.matt.script.core.language.LocalLanguage
@@ -29,7 +30,7 @@ object ExcelCore {
         headList.add("defaultKey")
         headList.add("newkey")
         loadDefaultLanguageList().forEach {
-            headList.add("${it.key}(${it.chineseName})")
+            headList.add(it.key)
         }
         realList.add(headList)
 
@@ -173,6 +174,7 @@ object ExcelCore {
                 )
             )
         }
+        LogWrapper.loggerWrapper(this).debug("===>>>" + Gson().toJson(list))
         return list
     }
 }
