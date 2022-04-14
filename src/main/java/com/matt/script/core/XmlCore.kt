@@ -21,13 +21,9 @@ object XmlCore {
             .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
         LogWrapper.loggerWrapper(this).debug("导出路径：$languageDir,扫描路径：${newSortKeySet.size},iOS?:$iosType")
 
-        val tripleList = if (iosType) {
-            FileConfig.languageDirNameListIOS
-        } else {
-            FileConfig.languageDirNameList
-        }
+        val tripleList = ExcelCore.loadDefaultLanguageList()
         tripleList.forEachIndexed { index, triple ->
-            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.first)
+            val dir = FileUtilsWrapper.getDirByCreate(languageDir + "/" + triple.languageDir(iosType))
             val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
             val fullPath = "$dir/$fileName"
             val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)

@@ -18,6 +18,7 @@ fun main() {
         "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
         false
     )
+
 }
 
 object FindUselessCore {
