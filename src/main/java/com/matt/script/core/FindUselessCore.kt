@@ -33,12 +33,7 @@ object FindUselessCore {
     ) {
         val dirPath = scanDirList
         val allExistSet = XmlCore.asbStringsXml2SortKeyList(defaultStringXmlPath, iosType)
-        val uselessSet = findUselessSetWrapper(
-            dirPath,
-            allExistSet,
-            RegexUtilsWrapper.javaOrKtPureStringKeyRegex,
-            RegexUtilsWrapper.xmlPureStringKeyRegex
-        )
+        val uselessSet = findUselessSetWrapper(dirPath, allExistSet)
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet)
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表个数：" + uselessSet.size)
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("在使用列表个数：" + (allExistSet.size - uselessSet.size))
@@ -80,12 +75,7 @@ object FindUselessCore {
             FileUtilsWrapper.getPureName(it)
         }.toMutableSet()
 
-        val uselessSet = findUselessSetWrapper(
-            dirPath,
-            allExistSet,
-            RegexUtilsWrapper.javaOrKtPureDrawableKeyRegex,
-            RegexUtilsWrapper.xmlPureDrawableKeyRegex
-        )
+        val uselessSet = findUselessSetWrapper(dirPath, allExistSet)
         LogWrapper.loggerWrapper(FindUselessCore.javaClass).debug("未使用列表：" + uselessSet)
         //后续怎么处理，自己定
         val delFileList = originKeyList.filter {
@@ -120,9 +110,7 @@ object FindUselessCore {
 
     fun findUselessSetWrapper(
         dirPath: List<String>,
-        allExistSet: Set<String>,
-        javaOrKtRegex: String,
-        xmlRegex: String,
+        allExistSet: Set<String>
     ): Set<String> {
         val uselessSet = findUselessSet(dirPath, allExistSet, object : FileFindKey {
             override fun find(file: File): Set<String>? {
@@ -130,10 +118,13 @@ object FindUselessCore {
                 val splitFileByDot = FileUtilsWrapper.splitFileByDot(file)
                 return when (splitFileByDot.second) {
                     "java", "kt" -> {
-                        RegexUtils.getMatches(javaOrKtRegex, readText).toSet()
+                        RegexUtils.getMatches(RegexUtilsWrapper.javaOrKtPureStringKeyRegex, readText).toSet()
                     }
                     "xml" -> {
-                        RegexUtils.getMatches(xmlRegex, readText).toSet()
+                        RegexUtils.getMatches(RegexUtilsWrapper.xmlPureStringKeyRegex, readText).toSet()
+                    }
+                    "m" -> {
+                        RegexUtils.getMatches(RegexUtilsWrapper.iosPureKeyRegex, readText).toSet()
                     }
                     else -> {
                         null
