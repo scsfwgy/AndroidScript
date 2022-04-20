@@ -1,4 +1,4 @@
-import com.matt.script.core.FindUselessCore
+import com.matt.script.core.KeyConvertCore
 
 fun main(args: Array<String>) {
     /**
@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
      */
 //    XmlCore.androidLbkExcel2StringXml(
 //        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-04-13_14-05-29.xlsx"
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-04-20_14-22-42.xlsx"
 //    )
 
     /**
@@ -21,15 +21,16 @@ fun main(args: Array<String>) {
     /**
      * 项目中旧key替换成新key
      */
-//    KeyConvertCore.oldKey2NewKey(
-//        listOf(
-//            "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
-//            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main"
-//        ),
-//        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-03-21_18-34-41-new2.xlsx",
-//        false
-//    )
+    KeyConvertCore.oldKey2NewKey(
+        listOf(
+            "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main",
+            "/Users/matt.wang/AsProject/Android-LBK/im/lib_im/src/main"
+        ),
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-04-20_14-22-42.xlsx",
+        false
+    )
 
     /**
      * 将语言配置文件导入到Excel
@@ -64,11 +65,11 @@ fun main(args: Array<String>) {
     /**
      * 删除无用的key
      */
-    FindUselessCore.findUselessStringXmlWrapper(
-        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
-        "/Users/matt.wang/iOSProjects/iOS-LBK/LBankApp/Sources/language/zh-Hans.lproj/RDLocalizable.strings",
-        "/Users/matt.wang/iOSProjects/iOS-LBK/LBankApp/Sources/language",
-        iosType = true,
-        onlyFind = true
-    )
+//    FindUselessCore.findUselessStringXmlWrapper(
+//        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
+//        "/Users/matt.wang/iOSProjects/iOS-LBK/LBankApp/Sources/language/zh-Hans.lproj/RDLocalizable.strings",
+//        "/Users/matt.wang/iOSProjects/iOS-LBK/LBankApp/Sources/language",
+//        iosType = true,
+//        onlyFind = true
+//    )
 }

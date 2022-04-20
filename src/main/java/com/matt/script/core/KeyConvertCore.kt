@@ -213,10 +213,10 @@ object KeyConvertCore {
         println("===========把strings.xml中的老key替换为新key============")
         val oldKey2NewKeyMap = getOldKey2NewKeyMap(inputExcelPath)
 
-        val languageDir = if (iosType) FileConfig.languageDirNameListIOS else FileConfig.languageDirNameList
+        val languageDir = ExcelCore.loadDefaultLanguageList()
         languageDir.forEach { languageTriple ->
             val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
-            val fullPath = languagePath + "/" + languageTriple.first + "/" + fileName
+            val fullPath = languagePath + "/" + languageTriple.languageDir(iosType) + "/" + fileName
             LogWrapper.loggerWrapper(this).debug("配置文件全路径：" + fullPath)
 
             val map = if (iosType) XmlCore.rDLocalizable2SortMap(fullPath) else XmlCore.stringsXml2SortedMap(fullPath)

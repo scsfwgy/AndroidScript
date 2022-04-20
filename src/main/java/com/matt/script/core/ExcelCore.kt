@@ -20,8 +20,8 @@ fun main() {
 
 object ExcelCore {
     fun asbLbkLanguage2Excel(excelOutPathDir: String, mapList: List<Map<String, String>>) {
-        //默认
-        val keyList = mapList[0].keys
+        //默认,中文拍34位
+        val keyList = mapList[33].keys
 
         val realList = ArrayList<List<String?>>()
 

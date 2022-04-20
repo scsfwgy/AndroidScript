@@ -25,8 +25,10 @@ object Code2StringXmlCore {
             listOf(
                 "${basePath}/app/src/main",
                 "${basePath}/lib_wrapper/src/main",
-                "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp"
-            ), XmlCore.stringsXml2SortedMap("${basePath}/lib_wrapper/src/main/res/values/strings.xml"),
+                "${basePath}/im/lib_im/src/main",
+                //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp"
+            ),
+            XmlCore.stringsXml2SortedMap("${basePath}/lib_wrapper/src/main/res/values/strings.xml"),
             //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/values/${defaultTimeName}/strings.xml"
             "${basePath}/lib_wrapper/src/main/res/values/strings.xml"
         )
@@ -156,6 +158,10 @@ object Code2StringXmlCore {
                     "SignManager",
                     "JPushManager",
                     "BuglyManager",
+                    "TestThemeActivity",
+                    "RouterData",
+                    "ARouterWrapper",
+                    "activity_test_theme",
                 )
                 val name = file.path
                 if (list.any { name.contains(it) }) {
