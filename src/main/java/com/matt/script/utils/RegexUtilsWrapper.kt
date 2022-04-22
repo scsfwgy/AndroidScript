@@ -87,7 +87,7 @@ object RegexUtilsWrapper {
     """.trimIndent()
 
     val xmlContainerZhContentRegex = """
-        (?<=android:text=")((?!@string/).)*[\u4e00-\u9fa5]+((?!").)*(?=")
+        (?<=android:(text|hint)=")((?!@string/).)*[\u4e00-\u9fa5]+((?!").)*(?=")
     """.trimIndent()
 
     val javaOrKtContainerR = """
