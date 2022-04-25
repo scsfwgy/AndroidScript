@@ -60,7 +60,14 @@ object ExcelCore {
     }
 
     fun loadDefaultLanguageList(): List<LocalLanguage> {
-        return loadLanguageListByExcel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/language/language.xlsx")
+        val localLanguageList =
+            loadLanguageListByExcel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/language/language.xlsx")
+        val file = File("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/assets/api/local_language.json")
+        LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + file.path)
+        LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + localLanguageList.size)
+        val toJson = Gson().toJson(localLanguageList)
+        file.writeText(toJson)
+        return localLanguageList
     }
 
     fun asbLbkLanguage2ExcelWrapper(

@@ -1,10 +1,13 @@
 package com.matt.script.utils
 
+import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.ss.usermodel.DateUtil
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+
 
 object ExcelUtils {
     fun baseXml2Excel(
@@ -40,13 +43,32 @@ object ExcelUtils {
             val lastCellNum = row.lastCellNum.toInt()
             for (itemIndex in 0 until lastCellNum) {
                 val cell = row.getCell(itemIndex)
-                cell?.cellType = CellType.STRING
-                val value = cell?.stringCellValue ?: ""
-                itemList.add(value)
+                val cellValue = getCellValue(cell)
+                itemList.add(cellValue)
             }
             finalList.add(itemList)
         }
         fileInputStream.close()
         return finalList
+    }
+
+    /**
+     * https://poi.apache.org/components/spreadsheet/quick-guide.html#CellContents
+     */
+    fun getCellValue(cell: Cell): String {
+        val cellType = cell.cellType
+        val data = when (cell.cellType) {
+            CellType.STRING -> cell.richStringCellValue.string
+            CellType.NUMERIC -> if (DateUtil.isCellDateFormatted(cell)) {
+                cell.dateCellValue
+            } else {
+                cell.numericCellValue
+            }
+            CellType.BOOLEAN -> cell.booleanCellValue
+            CellType.FORMULA -> cell.cellFormula
+            CellType.BLANK -> ""
+            else -> ""
+        }
+        return data.toString()
     }
 }
