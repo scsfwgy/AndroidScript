@@ -8,6 +8,7 @@ package com.matt.script.core.language
  * ============================================================
  **/
 class LocalLanguage(
+    val NO: Int,
     val key: String,
     val chineseName: String,
     val englishName: String,
@@ -15,6 +16,7 @@ class LocalLanguage(
     val androidLocal: String,
     val iOSLocal: String,
     val webLocal: String,
+    val newhomeLocal: String,
     val rtl: Boolean = false,
     val apiKey: String = "en-US",
 ) {

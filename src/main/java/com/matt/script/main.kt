@@ -1,19 +1,19 @@
-import com.matt.script.core.XmlCore
+import com.matt.script.core.ExcelCore
 
 fun main(args: Array<String>) {
     /**
      * 把项目中语言配置文件string.xml文件抽取成Excel
      */
 
-    //ExcelCore.androidLbkXml2Excel("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res", "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel")
+    ExcelCore.androidLbkXml2Excel("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res", "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel")
 
     /**
      * 将Excel回写成string.xml
      */
-    XmlCore.androidLbkExcel2StringXml(
-        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-04-24_19-53-38.xlsx"
-    )
+//    XmlCore.androidLbkExcel2StringXml(
+//        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-04-24_19-53-38.xlsx"
+//    )
 
     /**
      * 自动扫描出代码中文案并生成strings.xml

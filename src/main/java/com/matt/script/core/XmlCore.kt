@@ -42,7 +42,7 @@ object XmlCore {
         LogWrapper.loggerWrapper(XmlCore.javaClass)
             .debug("===========将Excel到处为项目用的语言配置 Excel=>strings.xml List============")
         LogWrapper.loggerWrapper(this).debug("导出路径：$languageDir,扫描路径：$excelPath,iOS?:$iosType")
-        val baseExcel2StringXml = ExcelUtils.baseExcel2StringXml(excelPath)
+        val baseExcel2StringXml = ExcelUtils.baseExcel2StringXml(excelPath, 0, 1)
         LogWrapper.loggerWrapper(this)
             .debug(baseExcel2StringXml.size.toString() + "," + baseExcel2StringXml.firstOrNull()?.size)
 
@@ -52,7 +52,7 @@ object XmlCore {
             val fileName = if (iosType) FileConfig.stringsXmlFileNameIOS else FileConfig.stringsXmlFileName
             val fullPath = "$dir/$fileName"
             val fullPatFile = FileUtilsWrapper.getFileByCreate(fullPath)
-            val pairList = baseExcel2StringXml.filterIndexed { index2, _ -> index2 > 0 }.map { itemList ->
+            val pairList = baseExcel2StringXml.map { itemList ->
                 val defaultKey = itemList[1]
                 //val key = itemList[1]
                 val newKey = itemList[2]

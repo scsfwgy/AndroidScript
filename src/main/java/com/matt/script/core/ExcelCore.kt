@@ -21,7 +21,7 @@ fun main() {
 object ExcelCore {
     fun asbLbkLanguage2Excel(excelOutPathDir: String, mapList: List<Map<String, String>>) {
         //默认,中文拍34位
-        val keyList = mapList[33].keys
+        val keyList = mapList[35].keys
 
         val realList = ArrayList<List<String?>>()
 
@@ -61,7 +61,7 @@ object ExcelCore {
 
     fun loadDefaultLanguageList(): List<LocalLanguage> {
         val localLanguageList =
-            loadLanguageListByExcel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/language/language.xlsx")
+            loadLanguageListByExcel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/language/语言名称对应表.xlsx")
         val file = File("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/assets/api/local_language.json")
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + file.path)
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + localLanguageList.size)
@@ -169,15 +169,17 @@ object ExcelCore {
         baseExcel2StringXml.forEach {
             list.add(
                 LocalLanguage(
-                    it[0] ?: "",
+                    it[0]?.toIntOrNull() ?: 0,
                     it[1] ?: "",
                     it[2] ?: "",
                     it[3] ?: "",
                     it[4] ?: "",
                     it[5] ?: "",
                     it[6] ?: "",
-                    it[7].equals("true", true),
+                    it[7] ?: "",
                     it[8] ?: "",
+                    it[9].equals("true", true),
+                    it[10] ?: "",
                 )
             )
         }
