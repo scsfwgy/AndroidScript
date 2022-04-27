@@ -43,8 +43,13 @@ object ExcelUtils {
             val lastCellNum = row.lastCellNum.toInt()
             for (itemIndex in 0 until lastCellNum) {
                 val cell = row.getCell(itemIndex)
-                val cellValue = getCellValue(cell)
-                itemList.add(cellValue)
+                if (cell == null) {
+                    //LogWrapper.loggerWrapper(this).debug("$index==>>>$itemIndex==>$row")
+                    itemList.add("")
+                } else {
+                    val cellValue = getCellValue(cell)
+                    itemList.add(cellValue)
+                }
             }
             finalList.add(itemList)
         }

@@ -1,6 +1,7 @@
 package com.matt.script.core
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.matt.script.config.FileConfig
 import com.matt.script.config.LogWrapper
 import com.matt.script.core.language.LocalLanguage
@@ -10,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.CellType
 import java.io.File
 import java.io.FileInputStream
+
 
 fun main() {
     ExcelCore.iOSLbkRDLocalizable2Excel(
@@ -65,7 +67,8 @@ object ExcelCore {
         val file = File("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/assets/api/local_language.json")
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + file.path)
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + localLanguageList.size)
-        val toJson = Gson().toJson(localLanguageList)
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        val toJson = gson.toJson(localLanguageList)
         file.writeText(toJson)
         return localLanguageList
     }
