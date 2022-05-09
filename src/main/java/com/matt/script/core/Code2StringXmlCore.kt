@@ -162,6 +162,7 @@ object Code2StringXmlCore {
                     "RouterData",
                     "ARouterWrapper",
                     "activity_test_theme",
+                    "DebugActivity",
                 )
                 val name = file.path
                 if (list.any { name.contains(it) }) {
