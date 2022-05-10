@@ -21,9 +21,9 @@ fun main() {
 }
 
 object ExcelCore {
-    fun asbLbkLanguage2Excel(excelOutPathDir: String, mapList: List<Map<String, String>>) {
+    fun asbLbkLanguage2Excel(excelOutPathDir: String, mapList: List<Map<String, String>>, defaultIndex: Int = 34) {
         //默认,中文拍34位
-        val keyList = mapList[35].keys
+        val keyList = mapList[defaultIndex].keys
 
         val realList = ArrayList<List<String?>>()
 
@@ -38,6 +38,9 @@ object ExcelCore {
 
         keyList.forEach { key ->
             val isNewKey = key.startsWith("L0")
+            if (!isNewKey) {
+                LogWrapper.loggerWrapper(this).debug("===>>" + key)
+            }
             val itemList = ArrayList<String?>()
             itemList.add(if (isNewKey) key.filterIndexed { index, _ -> index < 8 } else null)
             itemList.add(if (isNewKey) null else key)
