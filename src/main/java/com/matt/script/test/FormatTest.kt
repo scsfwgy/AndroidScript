@@ -1,11 +1,36 @@
 package com.matt.script.test
 
+import com.matt.script.utils.FileUtilsWrapper
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor
+import org.apache.poi.xwpf.usermodel.XWPFDocument
+import java.io.FileInputStream
 import java.math.BigDecimal
 
+
 fun main() {
-    for (i in 0..21) {
-        val data = i - 5
-        println(FormatTest.localDepthTypeConvert(data.toString()))
+
+    //        //开始写入
+//    val fileInputStream =
+//        FileInputStream("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp/706048.pdf.docx")
+//    val doc = XWPFDocument(fileInputStream)
+//    val extractor = XWPFWordExtractor(doc)
+//    val text = extractor.text
+//    println("=====>" + text)
+
+    val dir = FileUtilsWrapper.getDirByCreate("/Users/matt.wang/Desktop/word2")
+    val listFileByPath = FileUtilsWrapper.listFileByPath("/Users/matt.wang/Desktop/word", filterSuffix = "docx")
+    listFileByPath.forEach {
+        val name = it.parentFile.name
+        val dirByCreate = FileUtilsWrapper.getDirByCreate(dir + "/" + name)
+        val fileByCreate = FileUtilsWrapper.getFileByCreate(dirByCreate + "/" + it.name + ".txt")
+
+        //开始写入
+        val fileInputStream = FileInputStream(it)
+        val doc = XWPFDocument(fileInputStream)
+        val extractor = XWPFWordExtractor(doc)
+        val text = extractor.text
+        println("=====>" + it.path)
+        fileByCreate.writeText(text)
     }
 }
 

@@ -29,6 +29,7 @@ dependencies {
 
     //https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml/5.2.0
     api 'org.apache.poi:poi-ooxml:5.2.2'
+    api 'org.apache.poi:poi-scratchpad:5.2.2'
 
     // https://github.com/google/gson
     api "com.google.code.gson:gson:2.9.0"
