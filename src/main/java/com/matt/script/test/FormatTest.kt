@@ -10,28 +10,29 @@ import java.math.BigDecimal
 fun main() {
 
     //        //开始写入
-//    val fileInputStream =
-//        FileInputStream("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp/706048.pdf.docx")
-//    val doc = XWPFDocument(fileInputStream)
-//    val extractor = XWPFWordExtractor(doc)
-//    val text = extractor.text
-//    println("=====>" + text)
+    val fileInputStream =
+        FileInputStream("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp/706048.pdf.docx")
+    val doc = XWPFDocument(fileInputStream)
+    val extractor = XWPFWordExtractor(doc)
+    val text = extractor.text
+    extractor.coreProperties
+    println("=====>" + text)
 
-    val dir = FileUtilsWrapper.getDirByCreate("/Users/matt.wang/Desktop/word2")
-    val listFileByPath = FileUtilsWrapper.listFileByPath("/Users/matt.wang/Desktop/word", filterSuffix = "docx")
-    listFileByPath.forEach {
-        val name = it.parentFile.name
-        val dirByCreate = FileUtilsWrapper.getDirByCreate(dir + "/" + name)
-        val fileByCreate = FileUtilsWrapper.getFileByCreate(dirByCreate + "/" + it.name + ".txt")
-
-        //开始写入
-        val fileInputStream = FileInputStream(it)
-        val doc = XWPFDocument(fileInputStream)
-        val extractor = XWPFWordExtractor(doc)
-        val text = extractor.text
-        println("=====>" + it.path)
-        fileByCreate.writeText(text)
-    }
+//    val dir = FileUtilsWrapper.getDirByCreate("/Users/matt.wang/Desktop/word2")
+//    val listFileByPath = FileUtilsWrapper.listFileByPath("/Users/matt.wang/Desktop/word", filterSuffix = "docx")
+//    listFileByPath.forEach {
+//        val name = it.parentFile.name
+//        val dirByCreate = FileUtilsWrapper.getDirByCreate(dir + "/" + name)
+//        val fileByCreate = FileUtilsWrapper.getFileByCreate(dirByCreate + "/" + it.name + ".txt")
+//
+//        //开始写入
+//        val fileInputStream = FileInputStream(it)
+//        val doc = XWPFDocument(fileInputStream)
+//        val extractor = XWPFWordExtractor(doc)
+//        val text = extractor.text
+//        println("=====>" + it.path)
+//        fileByCreate.writeText(text)
+//    }
 }
 
 object FormatTest {
