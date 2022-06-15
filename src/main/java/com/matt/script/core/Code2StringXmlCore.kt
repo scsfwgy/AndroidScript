@@ -163,6 +163,7 @@ object Code2StringXmlCore {
                     "ARouterWrapper",
                     "activity_test_theme",
                     "DebugActivity",
+                    "TradeTypeIntroduceFragment"
                 )
                 val name = file.path
                 if (list.any { name.contains(it) }) {
