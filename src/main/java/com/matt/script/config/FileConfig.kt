@@ -13,6 +13,21 @@ object FileConfig {
 
     val resRootDir = "src/main/res"
 
+    fun fullModuleList(): List<String> {
+        return moduleList.map { "$androidRootPath/$it" }
+    }
+
+    fun fullResRootDir(): List<String> {
+        return fullModuleList().map { "$it/$resRootDir" }
+    }
+
+    /**
+     * 获取项目语言所在的根目录
+     */
+    fun languageResRootDir(): String {
+        return fullResRootDir()[1]
+    }
+
     val languageDirNameList = listOf(
         Triple("values", "zh-CN", "默认语言，中文"),
         Triple("values-en", "en-US", "英文"),
