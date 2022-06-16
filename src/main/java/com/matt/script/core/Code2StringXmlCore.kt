@@ -3,6 +3,7 @@ package com.matt.script.core
 import com.matt.script.config.LogWrapper
 import com.matt.script.core.interfaces.*
 import com.matt.script.utils.FileUtilsWrapper
+import com.matt.script.utils.LarkUtils
 import com.matt.script.utils.RegexUtilsWrapper
 import com.matt.script.utils.blankj.RegexUtils
 import java.io.File
@@ -297,6 +298,16 @@ object Code2StringXmlCore {
         val stringXmlPath = FileUtilsWrapper.getFileByCreate(newOutputStringXmlPath)
         stringXmlPath.writeText(pairList2StringXml)
         LogWrapper.loggerWrapper(this).debug("操作完成：" + stringXmlPath)
+
+
+        val newSize = newKey.size
+
+        val msg = "发现新文案：" + newSize + "个" + "\n文案如下：\n" +
+                newKey.joinToString(separator = "\n") { oldKey2NewKeyMap[it] ?: "" }
+
+
+        //自动发送到飞书
+        LarkUtils.autoSendMsgText("自动化扫描项目，新发现如下文案：\n" + msg)
     }
 
     fun value2StringKeyAuto(file: File, value: String, map: MutableMap<String, String>): Pair<Boolean, String> {

@@ -1,3 +1,4 @@
+import com.matt.script.core.Code2StringXmlCore
 import com.matt.script.core.ExcelCore
 
 fun main(args: Array<String>) {
@@ -18,7 +19,7 @@ fun main(args: Array<String>) {
     /**
      * 自动扫描出代码中文案并生成strings.xml
      */
-   // Code2StringXmlCore.lbkAndroidDemo()
+   Code2StringXmlCore.lbkAndroidDemo()
 
     /**
      * 项目中旧key替换成新key
