@@ -1,5 +1,6 @@
 package com.matt.script.test
 
+import com.matt.script.utils.ExcelUtils
 import com.matt.script.utils.FileUtilsWrapper
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor
 import org.apache.poi.xwpf.usermodel.XWPFDocument
@@ -41,9 +42,9 @@ fun main() {
 //    println("=====>" + text)
     //text.split()
 
-    val dir = FileUtilsWrapper.getDirByCreate("/Users/matt.wang/Desktop/word2")
+    val dir = FileUtilsWrapper.getDirByCreate("/Users/matt.wang/Desktop/word_1_new")
     val listFileByPath = FileUtilsWrapper.listFileByPath("/Users/matt.wang/Desktop/word", filterSuffix = "docx")
-    listFileByPath.forEach {
+    val map = listFileByPath.map {
         //开始写入
         val fileInputStream = FileInputStream(it)
         val doc = XWPFDocument(fileInputStream)
@@ -51,14 +52,24 @@ fun main() {
         val text = extractor.text
 
         val name = it.parentFile.name
-        val dirByCreate = FileUtilsWrapper.getDirByCreate(dir + "/" + name)
-        val fileByCreate = FileUtilsWrapper.getFileByCreate(dirByCreate + "/" + it.name+"_" + avg(text) +"_"+ ".txt")
+        //val dirByCreate = FileUtilsWrapper.getDirByCreate(dir + "/" + name)
+        //val fileByCreate = FileUtilsWrapper.getFileByCreate(dirByCreate + "/" + it.name+"_" + avg(text) +"_"+ ".txt")
 
 
-        println("=====>" + it.path)
-        fileByCreate.writeText(text)
+//        println("=====>" + it.path)
+//        fileByCreate.writeText(text)
+        //it.name + "====>>" + avg(text)
+
+        listOf(FileUtilsWrapper.splitFileByDot(it).first, avg(text))
     }
+    println(map)
+
+    ExcelUtils.baseXml2Excel(
+        FileUtilsWrapper.getFileByCreate("/Users/matt.wang/Desktop" + "/" + "第一期字数统计.xlsx"),
+        map
+    )
 }
+
 
 fun avg(text: String): String {
     val split = text.split(". ", "? ")
