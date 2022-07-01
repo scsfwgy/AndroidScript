@@ -1,5 +1,6 @@
 package com.matt.script.core
 
+import com.matt.script.config.FileConfig
 import com.matt.script.config.LogWrapper
 import com.matt.script.core.interfaces.*
 import com.matt.script.utils.FileUtilsWrapper
@@ -19,18 +20,13 @@ object Code2StringXmlCore {
     var count = 0
 
     fun lbkAndroidDemo() {
-        val defaultTimeName = FileUtilsWrapper.defaultTimeName()
-        val basePath = "/Users/matt.wang/AsProject/Android-LBK"
+        val fullMainRootDir = FileConfig.fullMainRootDir()
+        val defaultStringXml = FileConfig.defaultStringsXml()
+        val sortedMap = XmlCore.stringsXml2SortedMap(defaultStringXml)
         androidDemo(
-            listOf(
-                "${basePath}/app/src/main",
-                "${basePath}/lib_wrapper/src/main",
-                "${basePath}/im/lib_im/src/main",
-                //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/temp"
-            ),
-            XmlCore.stringsXml2SortedMap("${basePath}/lib_wrapper/src/main/res/values/strings.xml"),
-            //"/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/values/${defaultTimeName}/strings.xml"
-            "${basePath}/lib_wrapper/src/main/res/values/strings.xml"
+            fullMainRootDir,
+            sortedMap,
+            defaultStringXml
         )
     }
 

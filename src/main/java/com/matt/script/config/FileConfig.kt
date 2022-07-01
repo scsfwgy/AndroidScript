@@ -8,17 +8,28 @@ object FileConfig {
 
     val moduleList = listOf(
         "app",
-        "lib_wrapper"
+        "lib_wrapper",
+        "lib_im"
     )
 
-    val resRootDir = "src/main/res"
+    val mainDir = "src/main"
+    val resRootDir = "$mainDir/res"
 
     fun fullModuleList(): List<String> {
         return moduleList.map { "$androidRootPath/$it" }
     }
 
+    fun fullMainRootDir(): List<String> {
+        return fullModuleList().map { "$it/$mainDir" }
+    }
+
     fun fullResRootDir(): List<String> {
         return fullModuleList().map { "$it/$resRootDir" }
+    }
+
+    fun defaultStringsXml(): String {
+        //wrapper
+        return fullResRootDir()[1] + "/" + "values/strings.xml"
     }
 
     /**
