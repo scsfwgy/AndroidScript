@@ -85,7 +85,7 @@ object KeyConvertCore {
             val readTextStr = file.readText()
             val keyList = RegexUtils.getMatches(lineRegex, readTextStr)
             if (keyList.isEmpty()) {
-                LogWrapper.loggerWrapper(this).debug("该文件没有任何变化：" + file.path)
+                //LogWrapper.loggerWrapper(this).debug("该文件没有任何变化：" + file.path)
             } else {
                 val placeholder = "~~~~~~~~~"
                 val special = "%"

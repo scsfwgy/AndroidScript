@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
      */
 //    XmlCore.androidLbkExcel2StringXml(
 //        FileConfig.languageResRootDir(),
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-05-11_13-03-36.xlsx"
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-06-15_19-29-09-----.xlsx"
 //    )
 
     /**
@@ -24,13 +24,9 @@ fun main(args: Array<String>) {
      * 项目中旧key替换成新key
      */
 //    KeyConvertCore.oldKey2NewKey(
-//        listOf(
-//            "/Users/matt.wang/AsProject/Android-LBK/app/src/main",
-//            "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main",
-//            "/Users/matt.wang/AsProject/Android-LBK/im/lib_im/src/main"
-//        ),
-//        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/res",
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-05-10_15-10-04.xlsx",
+//        FileConfig.fullMainRootDir(),
+//        FileConfig.languageResRootDir(),
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/多语言自动化抽取转Excel_2022-06-15_19-29-09-----.xlsx",
 //        false
 //    )
 
