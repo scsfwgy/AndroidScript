@@ -66,8 +66,11 @@ object ExcelCore {
 
     fun loadDefaultLanguageList(): List<LocalLanguage> {
         val localLanguageList =
-            loadLanguageListByExcel("/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/language/语言名称对应表.xlsx")
-        val file = File("/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/assets/api/local_language.json")
+            loadLanguageListByExcel(FileConfig.languageConfigPath)
+        val file = File(FileConfig.languageConfig2AndroidConfig)
+        if (!file.exists()) {
+            LogWrapper.loggerWrapper("回写到项目的文件地址为空，写入失败！！！")
+        }
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + file.path)
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + localLanguageList.size)
         val gson = GsonBuilder().setPrettyPrinting().create()

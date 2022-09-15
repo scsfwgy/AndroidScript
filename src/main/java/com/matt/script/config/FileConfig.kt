@@ -6,6 +6,13 @@ object FileConfig {
     //要抽取的安卓项目根地址
     val androidRootPath = "/Users/matt.wang/AsProject/Android-LBK"
 
+    //语言配置文件：语言、简称等
+    const val languageConfigPath = "config/语言名称对应表.xlsx"
+
+    //多语言以配置文件件形式写到项目中
+    const val languageConfig2AndroidConfig =
+        "/Users/matt.wang/AsProject/Android-LBK/lib_wrapper/src/main/assets/api/local_language.json"
+
     val moduleList = listOf(
         "app",
         "lib_wrapper",
