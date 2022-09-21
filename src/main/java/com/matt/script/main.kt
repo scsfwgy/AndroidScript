@@ -1,4 +1,4 @@
-import com.matt.script.core.Code2StringXmlCore
+import com.matt.script.core.IosScanCore
 
 fun main(args: Array<String>) {
     /**
@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     /**
      * 自动扫描出代码中文案并生成strings.xml
      */
-   Code2StringXmlCore.lbkAndroidDemo()
+    //Code2StringXmlCore.lbkAndroidDemo()
 
     /**
      * 项目中旧key替换成新key
@@ -70,4 +70,20 @@ fun main(args: Array<String>) {
 //        iosType = true,
 //        onlyFind = true
 //    )
+
+    /**
+     * ios:扫描整个代码库，找到所有不存在在语言配置中的文案列出来，同时列出来已在语言配置中存在的文案（不需要替换）。
+     */
+    IosScanCore.findNoKeyListWrapper(
+        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings"
+    )
+
+    /**
+     * ios:用最新的语言配置扫描代码库，替换文案为最新的key
+     */
+    IosScanCore.replaceNewValueByKeyWrapper(
+        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings"
+    )
 }

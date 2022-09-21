@@ -55,6 +55,10 @@ object RegexUtilsWrapper {
         (?<=RDLocalizedString\(@")[a-zA-Z0-9\u4e00-\u9fa5_.\\、。"]+(?="\))
     """.trimIndent()
 
+    val iosPureKeyRegex2 = """
+        (?<=RDLocalizedString\(@")[a-zA-Z0-9\u4e00-\u9fa5_.\\、。"{}()]+(?="\))
+    """.trimIndent()
+
     //包含%，不包含%s
     val iosSpecialRegex = """
         (?!%s)%
