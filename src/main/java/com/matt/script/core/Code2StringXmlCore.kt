@@ -189,6 +189,45 @@ object Code2StringXmlCore {
         })
     }
 
+
+    /**
+     * todo:未做完
+     */
+    fun iosDemo(scanDirList: List<String>, sortMap: Map<String, String>, generateStringXmlPath: String) {
+        LogWrapper.loggerWrapper(this).debug("处理文件：" + scanDirList + "," + sortMap.size + "," + generateStringXmlPath)
+        LogWrapper.loggerWrapper(this).debug("开始扫描对应文件夹")
+        code2StringXmlCore(scanDirList, sortMap, generateStringXmlPath, object : FilePretreatment {
+            override fun parse(file: File): Triple<String?, String?, PlaceHolderFilter?>? {
+                /**
+                 * 核心
+                 */
+                val fileByDot = FileUtilsWrapper.splitFileByDot(file)
+                if (fileByDot.second == "m") {
+                    Triple(RegexUtilsWrapper.containsZhRegex, null, object : PlaceHolderFilter {
+                        override fun placeholder2RealWords(placeholder: String): String {
+                            return "TODO"
+                        }
+
+                    })
+                }
+                return null
+            }
+
+        }, object : ImportClass {
+            //ios不需要导包
+            override fun importAction(file: File): Boolean {
+                return false
+            }
+
+        }, object : LinePretreatmentHook {
+            //针对单行的拦截，一般过滤注释行用
+            override fun line2NewLineHook(file: File, line: String): Pair<Boolean, String> {
+                return Pair(false, line)
+            }
+
+        }, true)
+    }
+
     /**
      * @param scanPathList 待扫描处理的文件夹，越精确越好
      * @param defaultStringXml2SortMap 默认语言文件strings.xml转化为原有文案顺序的Map。注意：我们认为默认语言strings.xml文案是最全的。
@@ -203,6 +242,7 @@ object Code2StringXmlCore {
         filePretreatment: FilePretreatment,
         importClass: ImportClass,
         linePretreatmentHook: LinePretreatmentHook,
+        iosType: Boolean = false,
     ) {
         val oldKey2NewKeyMap = defaultStringXml2SortMap.toMutableMap()
 
@@ -285,7 +325,10 @@ object Code2StringXmlCore {
         }
 
         //开始写入xml
-        val pairList2StringXml = XmlCore.pairList2StringXml(oldKey2NewKeyMap.toList())
+        val pairList2StringXml =
+            if (iosType) XmlCore.iOSPairList2StringXml(oldKey2NewKeyMap.toList()) else XmlCore.pairList2StringXml(
+                oldKey2NewKeyMap.toList()
+            )
         //println(pairList2StringXml)
 
         LogWrapper.loggerWrapper(this).debug("------")
@@ -299,6 +342,7 @@ object Code2StringXmlCore {
 
         val msg = "发现新文案：" + newSize + "个" + "\n文案如下：\n" +
                 newKey.joinToString(separator = "\n") { oldKey2NewKeyMap[it] ?: "" }
+        LogWrapper.loggerWrapper(msg)
     }
 
     fun value2StringKeyAuto(file: File, value: String, map: MutableMap<String, String>): Pair<Boolean, String> {
