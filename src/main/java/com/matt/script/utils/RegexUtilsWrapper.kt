@@ -56,6 +56,10 @@ object RegexUtilsWrapper {
     """.trimIndent()
 
     val iosPureKeyRegex2 = """
+        (?<=RDLocalizedString\(@")[^L]((?!"\))[\s\S\n])*(?="\))
+    """.trimIndent()
+
+    val iosPureKeyRegex3 = """
         (?<=RDLocalizedString\(@")[a-zA-Z0-9\u4e00-\u9fa5_.\\、。"{}()]+(?="\))
     """.trimIndent()
 
