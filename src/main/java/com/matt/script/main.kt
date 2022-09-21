@@ -1,4 +1,5 @@
 import com.matt.script.core.IosScanCore
+import com.matt.script.utils.RegexUtilsWrapper
 
 fun main(args: Array<String>) {
     /**
@@ -76,14 +77,16 @@ fun main(args: Array<String>) {
      */
     IosScanCore.findNoKeyListWrapper(
         listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings"
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings",
+        RegexUtilsWrapper.iosPureKeyRegex2
     )
 
     /**
      * ios:用最新的语言配置扫描代码库，替换文案为最新的key
      */
-    IosScanCore.replaceNewValueByKeyWrapper(
-        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings"
-    )
+//    IosScanCore.replaceNewValueByKeyWrapper(
+//        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings",
+//        RegexUtilsWrapper.iosPureKeyRegex2
+//    )
 }

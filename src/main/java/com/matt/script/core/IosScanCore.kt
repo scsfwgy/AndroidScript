@@ -35,11 +35,12 @@ object IosScanCore {
 
     /**
      * 1. 扫描整个代码库，找到所有不存在在语言配置中的文案列出来，同时列出来已在语言配置中存在的文案（不需要替换）。
+     * @param pureValueRegex 获取到纯文案的正则：RDLocalizedString(@"买s入网格")=>买s入网格
      */
     fun findNoKeyListWrapper(
-        dirList: List<String>, rDLocalizablePath: String, regex: String = RegexUtilsWrapper.iosPureKeyRegex2
+        dirList: List<String>, rDLocalizablePath: String, pureValueRegex: String = RegexUtilsWrapper.iosPureKeyRegex2
     ): Pair<HashSet<String>, HashSet<String>> {
-        val pair = findNoKeyList(dirList, XmlCore.rDLocalizable2SortMap(rDLocalizablePath), regex)
+        val pair = findNoKeyList(dirList, XmlCore.rDLocalizable2SortMap(rDLocalizablePath), pureValueRegex)
         println("扫描到但是已存在的文案（暂时不需要管）：" + pair.second)
         println("最终结果：新文案：" + pair.first)
         return pair
@@ -47,11 +48,12 @@ object IosScanCore {
 
     /**
      * 3. 用最新的语言配置扫描代码库，替换文案为最新的key
+     * @param pureValueRegex 获取到纯文案的正则：RDLocalizedString(@"买s入网格")=>买s入网格
      */
     fun replaceNewValueByKeyWrapper(
-        dirList: List<String>, rDLocalizablePath: String, regex: String = RegexUtilsWrapper.iosPureKeyRegex2
+        dirList: List<String>, rDLocalizablePath: String, pureValueRegex: String = RegexUtilsWrapper.iosPureKeyRegex2
     ) {
-        replaceNewValueByKey(dirList, XmlCore.rDLocalizable2SortMap(rDLocalizablePath), regex)
+        replaceNewValueByKey(dirList, XmlCore.rDLocalizable2SortMap(rDLocalizablePath), pureValueRegex)
     }
 
 
