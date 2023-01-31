@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
      */
 //    XmlCore.androidLbkExcel2StringXml(
 //        FileConfig.languageResRootDir(),
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android666.xlsx"
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android2023_01_31_17_34.xlsx"
 //    )
 
     /**
