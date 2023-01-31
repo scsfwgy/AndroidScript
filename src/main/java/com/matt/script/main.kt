@@ -1,19 +1,19 @@
-import com.matt.script.core.IosScanCore
-import com.matt.script.utils.RegexUtilsWrapper
+import com.matt.script.config.FileConfig
+import com.matt.script.core.ExcelCore
 
 fun main(args: Array<String>) {
     /**
      * 把项目中语言配置文件string.xml文件抽取成Excel
      */
 
-    //ExcelCore.androidLbkXml2Excel(FileConfig.languageResRootDir(), "BackUpFiles/Xml2Excel")
+    ExcelCore.androidLbkXml2Excel(FileConfig.languageResRootDir(), "BackUpFiles/Xml2Excel")
 
     /**
      * 将Excel回写成string.xml
      */
 //    XmlCore.androidLbkExcel2StringXml(
 //        FileConfig.languageResRootDir(),
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/android(1).xlsx"
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android666.xlsx"
 //    )
 
     /**
@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
 //    KeyConvertCore.oldKey2NewKey(
 //        FileConfig.fullMainRootDir(),
 //        FileConfig.languageResRootDir(),
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/android(1).xlsx",
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/android-新版合约.xlsx",
 //        false
 //    )
 
@@ -75,11 +75,11 @@ fun main(args: Array<String>) {
     /**
      * ios:扫描整个代码库，找到所有不存在在语言配置中的文案列出来，同时列出来已在语言配置中存在的文案（不需要替换）。
      */
-    IosScanCore.findNoKeyListWrapper(
-        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
-        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings",
-        RegexUtilsWrapper.iosPureKeyRegex2
-    )
+//    IosScanCore.findNoKeyListWrapper(
+//        listOf("/Users/matt.wang/iOSProjects/iOS-LBK"),
+//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings",
+//        RegexUtilsWrapper.iosPureKeyRegex2
+//    )
 
     /**
      * ios:用最新的语言配置扫描代码库，替换文案为最新的key
