@@ -75,7 +75,7 @@ object ExcelCore {
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + localLanguageList.size)
         val gson = GsonBuilder().setPrettyPrinting().create()
         val toJson = gson.toJson(localLanguageList)
-        file.writeText(toJson)
+        //file.writeText(toJson)
         return localLanguageList
     }
 
@@ -178,17 +178,9 @@ object ExcelCore {
         baseExcel2StringXml.forEach {
             list.add(
                 LocalLanguage(
-                    it[0]?.toIntOrNull() ?: 0,
                     it[1] ?: "",
                     it[2] ?: "",
-                    it[3] ?: "",
-                    it[4] ?: "",
-                    it[5] ?: "",
-                    it[6] ?: "",
-                    it[7] ?: "",
-                    it[8] ?: "",
-                    it[9].equals("true", true),
-                    it[10] ?: "",
+                    it[4] ?: ""
                 )
             )
         }

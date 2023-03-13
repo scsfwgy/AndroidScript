@@ -1,12 +1,9 @@
-import com.matt.script.config.FileConfig
-import com.matt.script.core.ExcelCore
-
 fun main(args: Array<String>) {
     /**
      * 把项目中语言配置文件string.xml文件抽取成Excel
      */
 
-    ExcelCore.androidLbkXml2Excel(FileConfig.languageResRootDir(), "BackUpFiles/Xml2Excel")
+    //ExcelCore.androidLbkXml2Excel(FileConfig.languageResRootDir(), "BackUpFiles/Xml2Excel")
 
     /**
      * 将Excel回写成string.xml
@@ -89,4 +86,7 @@ fun main(args: Array<String>) {
 //        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/ios/language/zh-Hans.lproj/RDLocalizable.strings",
 //        RegexUtilsWrapper.iosPureKeyRegex2
 //    )
+
+
+    //ExcelCore.loadDefaultLanguageList()
 }

@@ -8,25 +8,24 @@ package com.matt.script.core.language
  * ============================================================
  **/
 class LocalLanguage(
-    val id: Int,
     val key: String,
     val chineseName: String,
-    val englishName: String,
-    val showName: String,
-    val androidLocal: String,
-    val iOSLocal: String,
-    val webLocal: String,
-    val newHomeLocal: String,
-    val rtl: Boolean = false,
-    val apiKey: String = "en-US",
+    val showName: String
 ) {
 
     fun languageDir(iosType: Boolean): String {
         if (!iosType) {
-            val append = "values"
-            if (key == DEFAULT_DIR_KEY) return append
-            if (key == DEFAULT_LANGUAGE_KEY) return append + "-en"
-            return append + "-" + androidLocal
+            val append = "values-"
+            return if (key == DEFAULT_DIR_KEY) {
+                append
+            } else {
+                val split = key.split("-")
+                if (split.size == 2) {
+                    append + split[0] + "-r" + split[1]
+                } else {
+                    append + key
+                }
+            }
         } else {
             //根据具体需求完善
             val append = "lproj"
@@ -37,6 +36,5 @@ class LocalLanguage(
 
     companion object {
         const val DEFAULT_DIR_KEY = "zh-CN"
-        const val DEFAULT_LANGUAGE_KEY = "en-US"
     }
 }
