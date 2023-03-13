@@ -1,3 +1,6 @@
+import com.matt.script.config.FileConfig
+import com.matt.script.core.XmlCore
+
 fun main(args: Array<String>) {
     /**
      * 把项目中语言配置文件string.xml文件抽取成Excel
@@ -8,10 +11,10 @@ fun main(args: Array<String>) {
     /**
      * 将Excel回写成string.xml
      */
-//    XmlCore.androidLbkExcel2StringXml(
-//        FileConfig.languageResRootDir(),
-//        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android2023_01_31_17_34.xlsx"
-//    )
+    XmlCore.androidLbkExcel2StringXml(
+        FileConfig.languageResRootDir(),
+        "/Users/matt.wang/IdeaProjects/AndroidScript/BackUpFiles/Xml2Excel/Android2023_03_13_14_43.xlsx"
+    )
 
     /**
      * 自动扫描出代码中文案并生成strings.xml

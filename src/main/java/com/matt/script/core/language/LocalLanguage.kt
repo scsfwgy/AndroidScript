@@ -15,15 +15,16 @@ class LocalLanguage(
 
     fun languageDir(iosType: Boolean): String {
         if (!iosType) {
-            val append = "values-"
+            val append = "values"
             return if (key == DEFAULT_DIR_KEY) {
                 append
             } else {
+                val newAppend = "$append-"
                 val split = key.split("-")
                 if (split.size == 2) {
-                    append + split[0] + "-r" + split[1]
+                    newAppend + split[0] + "-r" + split[1]
                 } else {
-                    append + key
+                    newAppend + key
                 }
             }
         } else {

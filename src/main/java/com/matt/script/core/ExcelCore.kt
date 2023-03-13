@@ -75,7 +75,7 @@ object ExcelCore {
         LogWrapper.loggerWrapper("loadDefaultLanguageList").debug("开始将语言配置写到assets中：" + localLanguageList.size)
         val gson = GsonBuilder().setPrettyPrinting().create()
         val toJson = gson.toJson(localLanguageList)
-        //file.writeText(toJson)
+        file.writeText(toJson)
         return localLanguageList
     }
 
@@ -178,7 +178,7 @@ object ExcelCore {
         baseExcel2StringXml.forEach {
             list.add(
                 LocalLanguage(
-                    it[1] ?: "",
+                    key2NewKey(it[1] ?: ""),
                     it[2] ?: "",
                     it[4] ?: ""
                 )
@@ -186,5 +186,23 @@ object ExcelCore {
         }
         LogWrapper.loggerWrapper(this).debug("===>>>" + Gson().toJson(list))
         return list
+    }
+
+    fun key2NewKey(key: String): String {
+        //https://blog.csdn.net/ITMagic_Jack/article/details/7711107
+        return when (key) {
+            "id" -> {
+                "in"
+            }
+            "he" -> {
+                "iw"
+            }
+            "yi" -> {
+                "ji"
+            }
+            else -> {
+                key
+            }
+        }
     }
 }
