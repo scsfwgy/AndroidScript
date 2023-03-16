@@ -21,7 +21,7 @@ fun main() {
 }
 
 object ExcelCore {
-    fun asbLbkLanguage2Excel(excelOutPathDir: String, mapList: List<Map<String, String>>, defaultIndex: Int = 34) {
+    fun asbLbkLanguage2Excel(excelOutPathDir: String, mapList: List<Map<String, String>>, defaultIndex: Int = 35) {
         //默认,中文拍34位
         val keyList = mapList[defaultIndex].keys
 
@@ -61,7 +61,7 @@ object ExcelCore {
             "语言集合"
         )
         LogWrapper.loggerWrapper(KeyConvertCore::class.java)
-            .debug("最终输出位置" + fileByCreate.path)
+            .debug("最终输出位置:" + fileByCreate.path)
     }
 
     fun loadDefaultLanguageList(): List<LocalLanguage> {
